@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<link rel="stylesheet" href="style.css">
+	<script src="script.js" defer></script>
+</head>
+<body>
+	<h1>Setup</h1>
+	<form id="setup-form" method="get">
+		<label for="img">Select image files</label>
+		<input id="input-image-files" type="file" name="img" accept="image/*" multiple>
+		<div id="preview-images-container" class="preview-images-container"></div>
+		<script>
+			const input_image_files = document.getElementById('input-image-files')
+			input_image_files.addEventListener('change',event=>{
+				const files = event.target.files
+				console.log(files)
+				for (const file of files) {			
+					if (file) {
+						const reader = new FileReader()
+						reader.onload = function (e) {
+							document.getElementById('preview-images-container').innerHTML += `<img class="preview-image" alt="preview" src="${e.target.result}">`
+						}
+						reader.readAsDataURL(file)
+					}
+				}
+			})
+		</script>
+		<label for="amount-of-rows">Rows</label>
+		<input type="number" name="amount-of-rows" id="amount-of-rows" value="5" min="1" max="100">
+		<br>
+		<label for="amount-of-columns">Columns</label>
+		<input type="number" name="amount-of-columns" id="amount-of-columns" value="5" min="1" max="100">
+		<br>
+		<input type="submit" id="form-submit-button">
+	</form>
+	<a href="grid.html">go to grid</a>
+</body>
+</html>
