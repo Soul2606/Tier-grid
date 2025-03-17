@@ -1,6 +1,10 @@
 
 .main-grid{
     display: grid;
+    row-gap: 2px;
+    column-gap: 2px;
+    padding: 2px;
+    background-color: black;
 }
 
 .preview-images-container{
@@ -15,4 +19,26 @@
 .preview-image{
     max-width: 200px;
     max-height: 200px;
+}
+
+.image{
+    max-width: 100px;
+    max-height: 100px;
+}
+
+.grid-slot{
+    min-width: 100px;
+    min-height: 100px;
+    background-color: rgb(38, 31, 28);
+}
+
+.grid-tier{
+    background-color: rgb(255, 255, 255);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tier-name-text{
+    font-size: large;
 }
