@@ -24,6 +24,21 @@ form_submit_button.addEventListener('click', ()=>{
 
 
 
+let dragging = false
+let hovering_drag_destination = null
+const drag_destinations = document.getElementsByClassName('drag-destination')
+for (const drag_destination of drag_destinations) {
+	drag_destination.addEventListener('mouseover',()=>{
+		if (dragging) {
+			console.log('set drag destination:', drag_destination)
+			hovering_drag_destination = drag_destination
+		}
+	})
+}
+
+
+
+
 function create_draggable_image(src){
 	const root = document.createElement('img')
 	root.className = 'image'
@@ -31,7 +46,7 @@ function create_draggable_image(src){
 
 	root.addEventListener('mousedown',()=>{
 		console.log('mouse down')
-		const return_element = root.parentElement
+		dragging = true
 		root.style.position = 'absolute'
 		root.style.pointerEvents = 'none'
 		
@@ -40,6 +55,11 @@ function create_draggable_image(src){
 			window.removeEventListener('mousemove',mouse_move)
 			root.style.position = 'unset'
 			root.style.pointerEvents = 'auto'
+			if (hovering_drag_destination) {
+				hovering_drag_destination.appendChild(root)
+				hovering_drag_destination = null
+			}
+			dragging = false
 		}
 		window.addEventListener('mouseup',end_drag)
 
@@ -47,7 +67,6 @@ function create_draggable_image(src){
 			if (event instanceof MouseEvent) {	
 				const x = event.pageX
 				const y = event.pageY		
-				console.log(x, y)
 				root.style.top = (y +'px')
 				root.style.left = (x +'px')
 			}
