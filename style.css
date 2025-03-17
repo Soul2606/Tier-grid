@@ -21,9 +21,39 @@
     max-height: 200px;
 }
 
+.grid-corner-slot{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.columns-description-container{
+    display: flex;
+    justify-content: center;
+}
+
+.row-description-container{
+    writing-mode: vertical-lr;
+    display: flex;
+    justify-content: center;
+    width: 25px;
+}
+
+.lane-description{
+    color: white;
+    margin: 0;
+    background-color: rgb(35, 35, 35);
+    min-width: 25px;
+    min-height: 25px;
+}
+
 .image{
     max-width: 100px;
     max-height: 100px;
+}
+
+.image-container{
+    min-height: 100px;
 }
 
 .grid-slot{

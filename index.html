@@ -39,36 +39,42 @@
 	</form>
 	<button id="form-submit-button">Send</button>
 	<h1>Grid</h1>
-	<div id="main-grid" class="main-grid" style="grid-template-columns: auto auto auto auto auto auto; grid-template-rows: auto auto auto auto auto auto;">
-		<div class="grid-corner-slot" style="grid-area: 1/1/2/2;"></div>
-		<div class="grid-slot grid-tier" style="grid-row: 1/2; grid-column: 2/3; background-color: rgb(255, 127, 251);">
+	<div id="main-grid" class="main-grid" style="grid-template-columns: 25px auto auto auto auto auto auto; grid-template-rows: 25px auto auto auto auto auto auto;">
+		<div class="grid-corner-slot" style="grid-area: 1/1/3/3;"></div>
+		<div class="columns-description-container" style="grid-area: 1/3/2/8;">
+			<p class="lane-description" contenteditable="true">Skill ceiling</p>
+		</div>
+		<div class="row-description-container" style="grid-area: 3/1/8/2;">
+			<p class="lane-description" contenteditable="true">Skill floor</p>
+		</div>
+		<div class="grid-slot grid-tier" style="grid-row: 2/3; grid-column: 3/4; background-color: rgb(255, 127, 251);">
 			<p class="tier-name-text">&omega;</p>
 		</div>
-		<div class="grid-slot grid-tier" style="grid-row: 1/2; grid-column: 3/4; background-color: rgb(225, 127, 255);">
+		<div class="grid-slot grid-tier" style="grid-row: 2/3; grid-column: 4/5; background-color: rgb(225, 127, 255);">
 			<p class="tier-name-text">&alpha;</p>
 		</div>
-		<div class="grid-slot grid-tier" style="grid-row: 1/2; grid-column: 4/5; background-color: rgb(180, 127, 255);">
+		<div class="grid-slot grid-tier" style="grid-row: 2/3; grid-column: 5/6; background-color: rgb(180, 127, 255);">
 			<p class="tier-name-text">&beta;</p>
 		</div>
-		<div class="grid-slot grid-tier" style="grid-row: 1/2; grid-column: 5/6; background-color: rgb(133, 127, 255);">
+		<div class="grid-slot grid-tier" style="grid-row: 2/3; grid-column: 6/7; background-color: rgb(133, 127, 255);">
 			<p class="tier-name-text">&gamma;</p>
 		</div>
-		<div class="grid-slot grid-tier" style="grid-row: 1/2; grid-column: 6/7; background-color: rgb(127, 159, 255);">
+		<div class="grid-slot grid-tier" style="grid-row: 2/3; grid-column: 7/8; background-color: rgb(127, 159, 255);">
 			<p class="tier-name-text">&delta;</p>
 		</div>
-		<div class="grid-slot grid-tier" style="grid-row: 2/3; grid-column: 1/2; background-color: rgb(255, 127, 127);">
+		<div class="grid-slot grid-tier" style="grid-row: 3/4; grid-column: 2/3; background-color: rgb(255, 127, 127);">
 			<p class="tier-name-text">S</p>
 		</div>
-		<div class="grid-slot grid-tier" style="grid-row: 3/4; grid-column: 1/2; background-color: rgb(255, 191, 127);">
+		<div class="grid-slot grid-tier" style="grid-row: 4/5; grid-column: 2/3; background-color: rgb(255, 191, 127);">
 			<p class="tier-name-text">A</p>
 		</div>
-		<div class="grid-slot grid-tier" style="grid-row: 4/5; grid-column: 1/2; background-color: rgb(255, 223, 127);">
+		<div class="grid-slot grid-tier" style="grid-row: 5/6; grid-column: 2/3; background-color: rgb(255, 223, 127);">
 			<p class="tier-name-text">B</p>
 		</div>
-		<div class="grid-slot grid-tier" style="grid-row: 5/6; grid-column: 1/2; background-color: rgb(255, 255, 127);">
+		<div class="grid-slot grid-tier" style="grid-row: 6/7; grid-column: 2/3; background-color: rgb(255, 255, 127);">
 			<p class="tier-name-text">C</p>
 		</div>
-		<div class="grid-slot grid-tier" style="grid-row: 6/7; grid-column: 1/2; background-color: rgb(191, 255, 127);">
+		<div class="grid-slot grid-tier" style="grid-row: 7/8; grid-column: 2/3; background-color: rgb(191, 255, 127);">
 			<p class="tier-name-text">D</p>
 		</div>
 		<div class="grid-slot drag-destination"></div>
@@ -97,7 +103,7 @@
 		<div class="grid-slot drag-destination"></div>
 		<div class="grid-slot drag-destination"></div>
 	</div>
-	<div id="image-container" class="image-container">
+	<div id="image-container" class="image-container drag-destination">
 	</div>
 </body>
 </html>
