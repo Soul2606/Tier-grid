@@ -44,8 +44,9 @@ function create_draggable_image(src){
 	root.className = 'image'
 	root.src = src
 
-	root.addEventListener('mousedown',()=>{
+	root.addEventListener('mousedown',e=>{
 		console.log('mouse down')
+		e.preventDefault()
 		dragging = true
 		root.style.position = 'absolute'
 		root.style.pointerEvents = 'none'
