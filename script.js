@@ -83,3 +83,44 @@ function create_draggable_image(src){
 
 const color_preset_rows = ['rgb(255, 127, 127)','rgb(255, 191, 127)','rgb(255, 223, 127)','rgb(255, 255, 127)','rgb(191, 255, 127)','rgb(127, 255, 127)']
 const color_preset_columns = ['rgb(255, 127, 251)','rgb(225, 127, 255)','rgb(180, 127, 255)','rgb(133, 127, 255)','rgb(127, 159, 255)','rgb(127, 204, 255)']
+
+
+
+
+const main_grid = document.getElementById('main-grid')
+const add_column_button = document.getElementById('add-column-button')
+const add_row_button = document.getElementById('add-row-button')
+
+
+
+function add_row(row, columns, start_column) {
+	if (typeof columns === 'number' && typeof row === 'number' && typeof start_column === 'number') {
+		const grid_tier = document.createElement('div')
+		grid_tier.className = 'grid-slot grid-tier'
+		grid_tier.style.gridRow = `${row}/${row+1}`
+		grid_tier.style.gridColumn = `${start_column}/${start_column+1}`
+		main_grid.appendChild(grid_tier)
+		for (let i = 0; i < columns; i++) {
+			const grid_slot = document.createElement('div')
+			grid_slot.className = 'grid-slot drag-destination'
+			grid_slot.style.gridRow = `${row}/${row+1}`
+			grid_slot.style.gridColumn = `${i+start_column+1}/${i+start_column+2}`
+			main_grid.appendChild(grid_slot)
+		}
+		const lane_options = document.createElement('div')
+		lane_options.className = 'grid-slot lane-options'
+		lane_options.style.gridRow = `${row}/${row+1}`
+		lane_options.style.gridColumn = `${columns+start_column+1}/${columns+start_column+2}`
+		main_grid.appendChild(lane_options)
+
+		add_row_button.style.gridRow = `${row+1}/${row+2}`
+	}
+}
+
+
+add_row(8,5,2)
+
+
+
+
+
