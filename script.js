@@ -81,8 +81,11 @@ function create_draggable_image(src){
 
 
 
-const color_preset_rows = ['rgb(255, 127, 127)','rgb(255, 191, 127)','rgb(255, 223, 127)','rgb(255, 255, 127)','rgb(191, 255, 127)','rgb(127, 255, 127)']
-const color_preset_columns = ['rgb(255, 127, 251)','rgb(225, 127, 255)','rgb(180, 127, 255)','rgb(133, 127, 255)','rgb(127, 159, 255)','rgb(127, 204, 255)']
+const color_preset_rows = ['rgb(255, 127, 127)','rgb(255, 191, 127)','rgb(255, 223, 127)','rgb(255, 255, 127)','rgb(191, 255, 127)','rgb(127, 255, 127)','rgb(127, 255, 249)']
+const color_preset_columns = ['rgb(255, 127, 251)','rgb(225, 127, 255)','rgb(180, 127, 255)','rgb(133, 127, 255)','rgb(127, 159, 255)','rgb(127, 204, 255)','rgb(127, 255, 249)']
+
+const name_preset_rows = ['S','A','B','C','D','E','F']
+const name_preset_columns = ['&omega;','&alpha;','&beta;','&gamma;','&epsilon;','&zeta;','&eta;']
 
 
 
@@ -126,7 +129,7 @@ function add_row(start_row, columns_amount, start_column, color, text_content) {
 
 		const column_options_elements = document.getElementsByClassName('column-options')
 		for (const element of column_options_elements) {
-			element.style.gridRow `${start_row+1}/${start_row+2}`
+			element.style.gridRow = `${start_row+1}/${start_row+2}`
 		}
 	}
 }
@@ -175,11 +178,32 @@ add_row(3,0,2, color_preset_rows[0], 'S')
 add_row(4,0,2, color_preset_rows[1], 'A')
 add_row(5,0,2, color_preset_rows[2], 'B')
 add_row(6,0,2, color_preset_rows[3], 'C')
-add_column(3,4,2, color_preset_columns[0], '&omega;')
-add_column(4,4,2, color_preset_columns[1], '&alpha;')
-add_column(5,4,2, color_preset_columns[2], '&beta;')
-add_column(6,4,2, color_preset_columns[3], '&gamma;')
+add_row(7,0,2, color_preset_rows[4], 'D')
+add_column(3,5,2, color_preset_columns[0], '&omega;')
+add_column(4,5,2, color_preset_columns[1], '&alpha;')
+add_column(5,5,2, color_preset_columns[2], '&beta;')
+add_column(6,5,2, color_preset_columns[3], '&gamma;')
+add_column(7,5,2, color_preset_columns[4], '&epsilon;')
 
+
+
+
+let rows = 5
+let columns = 5
+
+
+
+add_row_button.addEventListener('click',()=>{
+	add_row(rows+3,columns,2,color_preset_rows[rows],name_preset_rows[rows])
+	rows++
+})
+
+
+
+add_column_button.addEventListener('click',()=>{
+	add_column(columns+3,rows,2,color_preset_columns[columns],name_preset_columns[columns])
+	columns++
+})
 
 
 
