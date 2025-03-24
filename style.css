@@ -81,3 +81,11 @@
 .tier-name-text{
     font-size: large;
 }
+
+.row-options{
+    background-color: gray;
+}
+
+.column-options{
+    background-color: gray;
+}
