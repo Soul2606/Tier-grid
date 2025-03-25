@@ -3,6 +3,10 @@
     display: grid;
     row-gap: 2px;
     column-gap: 2px;
+    overflow-x: auto;
+}
+
+.main-grid-container{
     padding: 2px;
     background-color: black;
 }

@@ -183,7 +183,7 @@ add_column(3,5,2, color_preset_columns[0], '&omega;')
 add_column(4,5,2, color_preset_columns[1], '&alpha;')
 add_column(5,5,2, color_preset_columns[2], '&beta;')
 add_column(6,5,2, color_preset_columns[3], '&gamma;')
-add_column(7,5,2, color_preset_columns[4], '&epsilon;')
+add_column(7,5,2, color_preset_columns[4], '&delta;')
 
 
 
