@@ -85,7 +85,7 @@ const color_preset_rows = ['rgb(255, 127, 127)','rgb(255, 191, 127)','rgb(255, 2
 const color_preset_columns = ['rgb(255, 127, 251)','rgb(225, 127, 255)','rgb(180, 127, 255)','rgb(133, 127, 255)','rgb(127, 159, 255)','rgb(127, 204, 255)','rgb(127, 255, 249)']
 
 const name_preset_rows = ['S','A','B','C','D','E','F']
-const name_preset_columns = ['&omega;','&alpha;','&beta;','&gamma;','&epsilon;','&zeta;','&eta;']
+const name_preset_columns = ['&omega;','&alpha;','&beta;','&gamma;','&delta;','&epsilon;','&zeta;','&eta;']
 
 
 
@@ -187,27 +187,44 @@ function get_grid_area(start_row, start_column, end_row, end_column, elements_to
 
 
 
-
 function remove_row(start_row, start_column) {
-	const grid_slots = Array.from(document.getElementsByClassName('grid-slot')).filter(element=>element.style.gridRowStart === String(start_row))
-	const grid_tier = Array.from(document.getElementsByClassName('grid-tier')).filter(element=>element.style.gridRowStart === String(start_row) && element.style.gridColumnStart === String(start_column))[0]
-	const row_options_element = Array.from(document.getElementsByClassName('row-options')).filter(element=>element.style.gridRowStart === String(start_row))[0]
-	const elements_to_remove = grid_slots.concat([grid_tier, row_options_element])
+	const elements_to_check = Array.from(document.getElementsByClassName('grid-slot')).concat(Array.from(document.getElementsByClassName('grid-tier')), Array.from(document.getElementsByClassName('row-options')))
+	const elements_to_remove = get_grid_area(start_row, start_column, start_row+1, Infinity, elements_to_check)
 	for (const element of elements_to_remove) {
 		element.remove()
 	}
+	shift_grid_elements(get_grid_area(start_row+1,1,Infinity,Infinity,Array.from(document.getElementsByClassName('grid-rect'))),0,-1)
+	rows--
 }
 
 
 
 
 function remove_column(start_column, start_row) {
-	const grid_slots = Array.from(document.getElementsByClassName('grid-slot')).filter(element=>element.style.gridColumnStart === String(start_column))
-	const grid_tier = Array.from(document.getElementsByClassName('grid-tier')).filter(element=>element.style.gridRowStart === String(start_row) && element.style.gridColumnStart === String(start_column))[0]
-	const row_options_element = Array.from(document.getElementsByClassName('column-options')).filter(element=>element.style.gridColumnStart === String(start_column))[0]
-	const elements_to_remove = grid_slots.concat([grid_tier, row_options_element])
+	const elements_to_check = Array.from(document.getElementsByClassName('grid-slot')).concat(Array.from(document.getElementsByClassName('grid-tier')),Array.from(document.getElementsByClassName('column-options')))
+	const elements_to_remove = get_grid_area(start_row, start_column, Infinity, start_column+1, elements_to_check)
 	for (const element of elements_to_remove) {
 		element.remove()
+	}
+	shift_grid_elements(get_grid_area(1,start_column+1,Infinity,Infinity,Array.from(document.getElementsByClassName('grid-rect'))),-1,0)
+	columns--
+}
+
+
+
+
+function shift_grid_elements(elements_to_move, x, y) {
+	if ((!Array.isArray(elements_to_move))||(!typeof x === 'number')||(!typeof y === 'number')) {
+		throw new Error("Invalid parameters");
+	}
+	for (const element of elements_to_move) {
+		if (!element instanceof HTMLElement) {
+			throw new Error("Array contains non HTMLElement elements");
+		}
+		element.style.gridColumnStart = Number(element.style.gridColumnStart) + x
+		element.style.gridColumnEnd = Number(element.style.gridColumnEnd) + x
+		element.style.gridRowStart = Number(element.style.gridRowStart) + y
+		element.style.gridRowEnd = Number(element.style.gridRowEnd) + y
 	}
 }
 
@@ -247,6 +264,6 @@ add_column_button.addEventListener('click',()=>{
 
 
 
-//remove_row(3,2)
-//remove_column(3,2)
+remove_row(7,2)
+remove_column(7,2)
 
