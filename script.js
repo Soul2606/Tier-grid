@@ -89,6 +89,12 @@ const name_preset_columns = ['&omega;','&alpha;','&beta;','&gamma;','&delta;','&
 
 
 
+//The Grid, as in the area of the grid that is added by the script does not start at 1,1 there are styling elements that and other stuff that push the grid down and right to these two constants below
+const grid_wall = 2
+const grid_ceiling = 2
+
+
+
 
 const main_grid = document.getElementById('main-grid')
 const add_column_button = document.getElementById('add-column-button')
@@ -232,6 +238,7 @@ function shift_grid_elements(elements_to_move, x, y) {
 
 
 function create_lane_options_elements(row=true) {
+	//If row is false, assume column
 	const root = document.createElement('div')
 	root.className = 'grid-rect lane-options'
 	root.classList.add(row?'row-options':'column-options')
@@ -242,12 +249,56 @@ function create_lane_options_elements(row=true) {
 
 	if (row) {
 		remove_lane_button.addEventListener('click',()=>{
-			remove_row(Number(root.style.gridRowStart),2)
+			remove_row(Number(root.style.gridRowStart),grid_wall)
 		})
-	} else {//Else assume column
+	} else {
 		remove_lane_button.addEventListener('click',()=>{
-			remove_column(Number(root.style.gridColumnStart),2)
+			remove_column(Number(root.style.gridColumnStart),grid_wall)
 		})
+	}
+
+	if (row) {
+		const shift_row_down_button = document.createElement('button')
+		shift_row_down_button.className = 'shift-row-down-button'
+
+		shift_row_down_button.addEventListener('click',()=>{
+			const this_row = Number(root.style.gridRowStart)
+			const row_below = Number(root.style.gridRowStart)+1
+			const elements_on_this_row = get_grid_area(this_row,grid_ceiling,this_row+1,Infinity,Array.from(document.getElementsByClassName('grid-rect')))
+			const elements_on_row_below = get_grid_area(row_below,grid_ceiling,row_below+1,Infinity,Array.from(document.getElementsByClassName('grid-rect')))
+			if (elements_on_row_below.filter(e=>e.classList.contains('grid-slot')).length === 0) {
+				return
+			}
+			shift_grid_elements(elements_on_this_row,0,1)
+			shift_grid_elements(elements_on_row_below,0,-1)
+		})
+
+		root.appendChild(shift_row_down_button)
+
+		const shift_row_up_button = document.createElement('button')
+		shift_row_up_button.className = 'shift-row-up-button'
+
+		shift_row_up_button.addEventListener('click',()=>{
+			const this_row = Number(root.style.gridRowStart)
+			const row_above = Number(root.style.gridRowStart)-1
+			const elements_on_this_row = get_grid_area(this_row,2,this_row+1,Infinity,Array.from(document.getElementsByClassName('grid-rect')))
+			const elements_on_row_above = get_grid_area(row_above,2,row_above+1,Infinity,Array.from(document.getElementsByClassName('grid-rect')))
+			if (elements_on_row_above.filter(e=>e.classList.contains('grid-slot')).length === 0) {
+				return
+			}
+			shift_grid_elements(elements_on_this_row,0,-1)
+			shift_grid_elements(elements_on_row_above,0,1)
+		})
+
+		root.appendChild(shift_row_up_button)
+	} else {
+		const shift_column_right_button = document.createElement('button')
+		shift_column_right_button.className = 'shift-column-right-button'
+		root.appendChild(shift_column_right_button)
+
+		const shift_column_left_button = document.createElement('button')
+		shift_column_left_button.className = 'shift-column-left-button'
+		root.appendChild(shift_column_left_button)
 	}
 	return root
 }
@@ -255,16 +306,16 @@ function create_lane_options_elements(row=true) {
 
 
 
-add_row(3,0,2, color_preset_rows[0], 'S')
-add_row(4,0,2, color_preset_rows[1], 'A')
-add_row(5,0,2, color_preset_rows[2], 'B')
-add_row(6,0,2, color_preset_rows[3], 'C')
-add_row(7,0,2, color_preset_rows[4], 'D')
-add_column(3,5,2, color_preset_columns[0], '&omega;')
-add_column(4,5,2, color_preset_columns[1], '&alpha;')
-add_column(5,5,2, color_preset_columns[2], '&beta;')
-add_column(6,5,2, color_preset_columns[3], '&gamma;')
-add_column(7,5,2, color_preset_columns[4], '&delta;')
+add_row(grid_ceiling+1,0,grid_wall, color_preset_rows[0], 'S')
+add_row(grid_ceiling+2,0,grid_wall, color_preset_rows[1], 'A')
+add_row(grid_ceiling+3,0,grid_wall, color_preset_rows[2], 'B')
+add_row(grid_ceiling+4,0,grid_wall, color_preset_rows[3], 'C')
+add_row(grid_ceiling+5,0,grid_wall, color_preset_rows[4], 'D')
+add_column(grid_wall+1,5,grid_ceiling, color_preset_columns[0], '&omega;')
+add_column(grid_wall+2,5,grid_ceiling, color_preset_columns[1], '&alpha;')
+add_column(grid_wall+3,5,grid_ceiling, color_preset_columns[2], '&beta;')
+add_column(grid_wall+4,5,grid_ceiling, color_preset_columns[3], '&gamma;')
+add_column(grid_wall+5,5,grid_ceiling, color_preset_columns[4], '&delta;')
 
 
 
@@ -275,14 +326,14 @@ let columns = 5
 
 
 add_row_button.addEventListener('click',()=>{
-	add_row(rows+3,columns,2,color_preset_rows[rows],name_preset_rows[rows])
+	add_row(rows+grid_ceiling+1,columns,grid_wall,color_preset_rows[rows],name_preset_rows[rows])
 	rows++
 })
 
 
 
 add_column_button.addEventListener('click',()=>{
-	add_column(columns+3,rows,2,color_preset_columns[columns],name_preset_columns[columns])
+	add_column(columns+grid_ceiling+1,rows,grid_wall,color_preset_columns[columns],name_preset_columns[columns])
 	columns++
 })
 
