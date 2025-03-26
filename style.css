@@ -96,3 +96,10 @@
 .column-options{
     background-color: gray;
 }
+
+.remove-lane-button{
+    min-width: 30px;
+    min-height: 20px;
+    border-radius: 5px;
+    border: solid black 1px;
+}

@@ -118,8 +118,7 @@ function add_row(start_row, columns_amount, start_column, color, text_content) {
 			main_grid.appendChild(grid_slot)
 		}
 
-		const lane_options = document.createElement('div')
-		lane_options.className = 'grid-rect row-options'
+		const lane_options = create_lane_options_elements(true)
 		lane_options.style.gridRow = `${start_row}/${start_row+1}`
 		lane_options.style.gridColumn = `${columns_amount+start_column+1}/${columns_amount+start_column+2}`
 		main_grid.appendChild(lane_options)
@@ -155,8 +154,7 @@ function add_column(start_column, rows_amount, start_row, color, text_content) {
 			main_grid.appendChild(grid_slot)
 		}
 
-		const lane_options = document.createElement('div')
-		lane_options.className = 'grid-rect column-options'
+		const lane_options = create_lane_options_elements(false)
 		lane_options.style.gridColumn = `${start_column}/${start_column+1}`
 		lane_options.style.gridRow = `${rows_amount+start_row+1}/${rows_amount+start_row+2}`
 		main_grid.appendChild(lane_options)
@@ -194,6 +192,7 @@ function remove_row(start_row, start_column) {
 		element.remove()
 	}
 	shift_grid_elements(get_grid_area(start_row+1,1,Infinity,Infinity,Array.from(document.getElementsByClassName('grid-rect'))),0,-1)
+	row_description_container.style.gridRowEnd = Number(row_description_container.style.gridRowEnd)-1
 	rows--
 }
 
@@ -207,6 +206,7 @@ function remove_column(start_column, start_row) {
 		element.remove()
 	}
 	shift_grid_elements(get_grid_area(1,start_column+1,Infinity,Infinity,Array.from(document.getElementsByClassName('grid-rect'))),-1,0)
+	row_description_container.style.gridColumnEnd = Number(row_description_container.style.gridColumnEnd) - 1
 	columns--
 }
 
@@ -226,6 +226,30 @@ function shift_grid_elements(elements_to_move, x, y) {
 		element.style.gridRowStart = Number(element.style.gridRowStart) + y
 		element.style.gridRowEnd = Number(element.style.gridRowEnd) + y
 	}
+}
+
+
+
+
+function create_lane_options_elements(row=true) {
+	const root = document.createElement('div')
+	root.className = 'grid-rect lane-options'
+	root.classList.add(row?'row-options':'column-options')
+
+	const remove_lane_button = document.createElement('button')
+	remove_lane_button.className = 'remove-lane-button'
+	root.appendChild(remove_lane_button)
+
+	if (row) {
+		remove_lane_button.addEventListener('click',()=>{
+			remove_row(Number(root.style.gridRowStart),2)
+		})
+	} else {//Else assume column
+		remove_lane_button.addEventListener('click',()=>{
+			remove_column(Number(root.style.gridColumnStart),2)
+		})
+	}
+	return root
 }
 
 
@@ -262,8 +286,4 @@ add_column_button.addEventListener('click',()=>{
 	columns++
 })
 
-
-
-remove_row(7,2)
-remove_column(7,2)
 
