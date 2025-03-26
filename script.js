@@ -103,7 +103,7 @@ const row_description_container = document.getElementById('row-description-conta
 function add_row(start_row, columns_amount, start_column, color, text_content) {
 	if (typeof columns_amount === 'number' && typeof start_row === 'number' && typeof start_column === 'number') {
 		const grid_tier = document.createElement('div')
-		grid_tier.className = 'grid-slot grid-tier'
+		grid_tier.className = 'grid-rect grid-tier'
 		grid_tier.style.gridRow = `${start_row}/${start_row+1}`
 		grid_tier.style.gridColumn = `${start_column}/${start_column+1}`
 		grid_tier.style.backgroundColor = color
@@ -112,14 +112,14 @@ function add_row(start_row, columns_amount, start_column, color, text_content) {
 		main_grid.appendChild(grid_tier)
 		for (let i = 0; i < columns_amount; i++) {
 			const grid_slot = document.createElement('div')
-			grid_slot.className = 'grid-slot drag-destination'
+			grid_slot.className = 'grid-rect drag-destination grid-slot'
 			grid_slot.style.gridRow = `${start_row}/${start_row+1}`
 			grid_slot.style.gridColumn = `${i+start_column+1}/${i+start_column+2}`
 			main_grid.appendChild(grid_slot)
 		}
 
 		const lane_options = document.createElement('div')
-		lane_options.className = 'grid-slot row-options'
+		lane_options.className = 'grid-rect row-options'
 		lane_options.style.gridRow = `${start_row}/${start_row+1}`
 		lane_options.style.gridColumn = `${columns_amount+start_column+1}/${columns_amount+start_column+2}`
 		main_grid.appendChild(lane_options)
@@ -140,7 +140,7 @@ function add_row(start_row, columns_amount, start_column, color, text_content) {
 function add_column(start_column, rows_amount, start_row, color, text_content) {
 	if (typeof rows_amount === 'number' && typeof start_row === 'number' && typeof start_column === 'number') {
 		const grid_tier = document.createElement('div')
-		grid_tier.className = 'grid-slot grid-tier'
+		grid_tier.className = 'grid-rect grid-tier'
 		grid_tier.style.gridColumn = `${start_column}/${start_column+1}`
 		grid_tier.style.gridRow = `${start_row}/${start_row+1}`
 		grid_tier.style.backgroundColor = color
@@ -149,14 +149,14 @@ function add_column(start_column, rows_amount, start_row, color, text_content) {
 		main_grid.appendChild(grid_tier)
 		for (let i = 0; i < rows_amount; i++) {
 			const grid_slot = document.createElement('div')
-			grid_slot.className = 'grid-slot drag-destination'
+			grid_slot.className = 'grid-rect drag-destination grid-slot'
 			grid_slot.style.gridColumn = `${start_column}/${start_column+1}`
 			grid_slot.style.gridRow = `${i+start_row+1}/${i+start_row+2}`
 			main_grid.appendChild(grid_slot)
 		}
 
 		const lane_options = document.createElement('div')
-		lane_options.className = 'grid-slot column-options'
+		lane_options.className = 'grid-rect column-options'
 		lane_options.style.gridColumn = `${start_column}/${start_column+1}`
 		lane_options.style.gridRow = `${rows_amount+start_row+1}/${rows_amount+start_row+2}`
 		main_grid.appendChild(lane_options)
@@ -168,6 +168,46 @@ function add_column(start_column, rows_amount, start_row, color, text_content) {
 		for (const element of row_options_elements) {
 			element.style.gridColumn = `${start_column+1}/${start_column+2}`
 		}
+	}
+}
+
+
+
+
+function get_grid_area(start_row, start_column, end_row, end_column, elements_to_check) {
+	return Array.from(elements_to_check).filter(element=>{
+		const style = window.getComputedStyle(element)
+		return Number(style.gridRowStart) >= start_row&&
+		Number(style.gridRowEnd) <= end_row&&
+		Number(style.gridColumnStart) >= start_column&&
+		Number(style.gridColumnEnd) <= end_column
+	})
+}
+
+
+
+
+
+function remove_row(start_row, start_column) {
+	const grid_slots = Array.from(document.getElementsByClassName('grid-slot')).filter(element=>element.style.gridRowStart === String(start_row))
+	const grid_tier = Array.from(document.getElementsByClassName('grid-tier')).filter(element=>element.style.gridRowStart === String(start_row) && element.style.gridColumnStart === String(start_column))[0]
+	const row_options_element = Array.from(document.getElementsByClassName('row-options')).filter(element=>element.style.gridRowStart === String(start_row))[0]
+	const elements_to_remove = grid_slots.concat([grid_tier, row_options_element])
+	for (const element of elements_to_remove) {
+		element.remove()
+	}
+}
+
+
+
+
+function remove_column(start_column, start_row) {
+	const grid_slots = Array.from(document.getElementsByClassName('grid-slot')).filter(element=>element.style.gridColumnStart === String(start_column))
+	const grid_tier = Array.from(document.getElementsByClassName('grid-tier')).filter(element=>element.style.gridRowStart === String(start_row) && element.style.gridColumnStart === String(start_column))[0]
+	const row_options_element = Array.from(document.getElementsByClassName('column-options')).filter(element=>element.style.gridColumnStart === String(start_column))[0]
+	const elements_to_remove = grid_slots.concat([grid_tier, row_options_element])
+	for (const element of elements_to_remove) {
+		element.remove()
 	}
 }
 
@@ -207,4 +247,6 @@ add_column_button.addEventListener('click',()=>{
 
 
 
+//remove_row(3,2)
+//remove_column(3,2)
 

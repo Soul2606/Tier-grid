@@ -69,7 +69,7 @@
     min-height: 100px;
 }
 
-.grid-slot{
+.grid-rect{
     min-width: 100px;
     min-height: 100px;
     background-color: rgb(38, 31, 28);
