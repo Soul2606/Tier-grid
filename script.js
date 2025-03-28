@@ -94,21 +94,10 @@ const grid_wall = 2
 const grid_ceiling = 2
 
 
-
-
-class html_grid_element {
-	constructor(element) {
-		this.element = element
-	}
-
-	row_start(){
-		
-	}
-}
-
 const grid_tire_set = new Set()
-const gird_slot_set = new Set()
+const grid_slot_set = new Set()
 const options_element_set = new Set()
+const grid_cells_set = new Set()
 
 
 
@@ -131,20 +120,23 @@ function add_row(start_row, columns_amount, start_column, color, text_content) {
 		grid_tier.style.gridColumn = `${start_column}/${start_column+1}`
 		grid_tier.style.backgroundColor = color
 		grid_tier.innerHTML = `<p class="tier-name-text">${text_content}</p>`
-
 		main_grid.appendChild(grid_tier)
+		grid_tire_set.add(grid_tier)
+
 		for (let i = 0; i < columns_amount; i++) {
 			const grid_slot = document.createElement('div')
 			grid_slot.className = 'grid-rect drag-destination grid-slot'
 			grid_slot.style.gridRow = `${start_row}/${start_row+1}`
 			grid_slot.style.gridColumn = `${i+start_column+1}/${i+start_column+2}`
 			main_grid.appendChild(grid_slot)
+			grid_slot_set.add(grid_slot)
 		}
 
 		const lane_options = create_lane_options_elements(true)
 		lane_options.style.gridRow = `${start_row}/${start_row+1}`
 		lane_options.style.gridColumn = `${columns_amount+start_column+1}/${columns_amount+start_column+2}`
 		main_grid.appendChild(lane_options)
+		options_element_set.add(lane_options)
 
 		add_row_button.style.gridRow = `${start_row+1}/${start_row+2}`
 		row_description_container.style.gridRowEnd = start_row+1
@@ -153,6 +145,10 @@ function add_row(start_row, columns_amount, start_column, color, text_content) {
 		for (const element of column_options_elements) {
 			element.style.gridRow = `${start_row+1}/${start_row+2}`
 		}
+
+		grid_tire_set.forEach(element=>grid_cells_set.add(element))
+		grid_slot_set.forEach(element=>grid_cells_set.add(element))
+		options_element_set.forEach(element=>grid_cells_set.add(element))	
 	}
 }
 
@@ -167,20 +163,23 @@ function add_column(start_column, rows_amount, start_row, color, text_content) {
 		grid_tier.style.gridRow = `${start_row}/${start_row+1}`
 		grid_tier.style.backgroundColor = color
 		grid_tier.innerHTML = `<p class="tier-name-text">${text_content}</p>`
-
 		main_grid.appendChild(grid_tier)
+		grid_tire_set.add(grid_tier)
+
 		for (let i = 0; i < rows_amount; i++) {
 			const grid_slot = document.createElement('div')
 			grid_slot.className = 'grid-rect drag-destination grid-slot'
 			grid_slot.style.gridColumn = `${start_column}/${start_column+1}`
 			grid_slot.style.gridRow = `${i+start_row+1}/${i+start_row+2}`
 			main_grid.appendChild(grid_slot)
+			grid_slot_set.add(grid_slot)
 		}
 
 		const lane_options = create_lane_options_elements(false)
 		lane_options.style.gridColumn = `${start_column}/${start_column+1}`
 		lane_options.style.gridRow = `${rows_amount+start_row+1}/${rows_amount+start_row+2}`
 		main_grid.appendChild(lane_options)
+		options_element_set.add(lane_options)
 
 		add_column_button.style.gridColumn = `${start_column+1}/${start_column+2}`
 		columns_description_container.style.gridColumnEnd = start_column+1
@@ -189,6 +188,10 @@ function add_column(start_column, rows_amount, start_row, color, text_content) {
 		for (const element of row_options_elements) {
 			element.style.gridColumn = `${start_column+1}/${start_column+2}`
 		}
+
+		grid_tire_set.forEach(element=>grid_cells_set.add(element))
+		grid_slot_set.forEach(element=>grid_cells_set.add(element))
+		options_element_set.forEach(element=>grid_cells_set.add(element))
 	}
 }
 
@@ -209,12 +212,16 @@ function get_grid_area(start_row, start_column, end_row, end_column, elements_to
 
 
 function remove_row(start_row, start_column) {
-	const elements_to_check = Array.from(document.getElementsByClassName('grid-slot')).concat(Array.from(document.getElementsByClassName('grid-tier')), Array.from(document.getElementsByClassName('row-options')))
+	const elements_to_check = Array.from(grid_cells_set)
 	const elements_to_remove = get_grid_area(start_row, start_column, start_row+1, Infinity, elements_to_check)
 	for (const element of elements_to_remove) {
+		grid_tire_set.delete(element)
+		grid_slot_set.delete(element)
+		options_element_set.delete(element)
+		grid_cells_set.delete(element)
 		element.remove()
 	}
-	shift_grid_elements(get_grid_area(start_row+1,1,Infinity,Infinity,Array.from(document.getElementsByClassName('grid-rect'))),0,-1)
+	shift_grid_elements(get_grid_area(start_row+1,1,Infinity,Infinity,Array.from(grid_cells_set)),0,-1)
 	row_description_container.style.gridRowEnd = Number(row_description_container.style.gridRowEnd)-1
 	rows--
 }
@@ -223,12 +230,16 @@ function remove_row(start_row, start_column) {
 
 
 function remove_column(start_column, start_row) {
-	const elements_to_check = Array.from(document.getElementsByClassName('grid-slot')).concat(Array.from(document.getElementsByClassName('grid-tier')),Array.from(document.getElementsByClassName('column-options')))
+	const elements_to_check = Array.from(grid_cells_set)
 	const elements_to_remove = get_grid_area(start_row, start_column, Infinity, start_column+1, elements_to_check)
 	for (const element of elements_to_remove) {
+		grid_tire_set.delete(element)
+		grid_slot_set.delete(element)
+		options_element_set.delete(element)
+		grid_cells_set.delete(element)
 		element.remove()
 	}
-	shift_grid_elements(get_grid_area(1,start_column+1,Infinity,Infinity,Array.from(document.getElementsByClassName('grid-rect'))),-1,0)
+	shift_grid_elements(get_grid_area(1,start_column+1,Infinity,Infinity,Array.from(grid_cells_set)),-1,0)
 	row_description_container.style.gridColumnEnd = Number(row_description_container.style.gridColumnEnd) - 1
 	columns--
 }
@@ -281,8 +292,8 @@ function create_lane_options_elements(row=true) {
 		shift_row_down_button.addEventListener('click',()=>{
 			const this_row = Number(root.style.gridRowStart)
 			const row_below = Number(root.style.gridRowStart)+1
-			const elements_on_this_row = get_grid_area(this_row,grid_ceiling,this_row+1,Infinity,Array.from(document.getElementsByClassName('grid-rect')))
-			const elements_on_row_below = get_grid_area(row_below,grid_ceiling,row_below+1,Infinity,Array.from(document.getElementsByClassName('grid-rect')))
+			const elements_on_this_row = get_grid_area(this_row,grid_ceiling,this_row+1,Infinity,Array.from(grid_cells_set))
+			const elements_on_row_below = get_grid_area(row_below,grid_ceiling,row_below+1,Infinity,Array.from(grid_cells_set))
 			if (elements_on_row_below.filter(e=>e.classList.contains('grid-slot')).length === 0) {
 				return
 			}
@@ -298,8 +309,8 @@ function create_lane_options_elements(row=true) {
 		shift_row_up_button.addEventListener('click',()=>{
 			const this_row = Number(root.style.gridRowStart)
 			const row_above = Number(root.style.gridRowStart)-1
-			const elements_on_this_row = get_grid_area(this_row,2,this_row+1,Infinity,Array.from(document.getElementsByClassName('grid-rect')))
-			const elements_on_row_above = get_grid_area(row_above,2,row_above+1,Infinity,Array.from(document.getElementsByClassName('grid-rect')))
+			const elements_on_this_row = get_grid_area(this_row,2,this_row+1,Infinity,Array.from(grid_cells_set))
+			const elements_on_row_above = get_grid_area(row_above,2,row_above+1,Infinity,Array.from(grid_cells_set))
 			if (elements_on_row_above.filter(e=>e.classList.contains('grid-slot')).length === 0) {
 				return
 			}
@@ -333,6 +344,8 @@ add_column(grid_wall+2,5,grid_ceiling, color_preset_columns[1], '&alpha;')
 add_column(grid_wall+3,5,grid_ceiling, color_preset_columns[2], '&beta;')
 add_column(grid_wall+4,5,grid_ceiling, color_preset_columns[3], '&gamma;')
 add_column(grid_wall+5,5,grid_ceiling, color_preset_columns[4], '&delta;')
+
+console.log(grid_tire_set, grid_slot_set, options_element_set, grid_cells_set)
 
 
 
