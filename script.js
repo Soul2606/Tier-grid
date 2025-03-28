@@ -96,6 +96,23 @@ const grid_ceiling = 2
 
 
 
+class html_grid_element {
+	constructor(element) {
+		this.element = element
+	}
+
+	row_start(){
+		
+	}
+}
+
+const grid_tire_set = new Set()
+const gird_slot_set = new Set()
+const options_element_set = new Set()
+
+
+
+
 const main_grid = document.getElementById('main-grid')
 const add_column_button = document.getElementById('add-column-button')
 const add_row_button = document.getElementById('add-row-button')
