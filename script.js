@@ -273,6 +273,7 @@ function create_lane_options_elements(row=true) {
 
 	const remove_lane_button = document.createElement('button')
 	remove_lane_button.className = 'remove-lane-button'
+	remove_lane_button.classList.add(row?'remove-row-button':'remove-column-button')
 	root.appendChild(remove_lane_button)
 
 	if (row) {
@@ -301,6 +302,7 @@ function create_lane_options_elements(row=true) {
 			shift_grid_elements(elements_on_row_below,0,-1)
 		})
 
+		shift_row_down_button.innerHTML += `<img src="img/arrow-icon.png" alt="arrow-icon" class="${'shift-row-down-arrow'} shift-arrow">`
 		root.appendChild(shift_row_down_button)
 
 		const shift_row_up_button = document.createElement('button')
@@ -318,14 +320,17 @@ function create_lane_options_elements(row=true) {
 			shift_grid_elements(elements_on_row_above,0,1)
 		})
 
+		shift_row_up_button.innerHTML += `<img src="img/arrow-icon.png" alt="arrow-icon" class="${'shift-row-up-arrow'} shift-arrow">`
 		root.appendChild(shift_row_up_button)
 	} else {
 		const shift_column_right_button = document.createElement('button')
 		shift_column_right_button.className = 'shift-column-right-button'
+		shift_column_right_button.innerHTML += `<img src="img/arrow-icon.png" alt="arrow-icon" class="${'shift-column-right-arrow'} shift-arrow">`
 		root.appendChild(shift_column_right_button)
 
 		const shift_column_left_button = document.createElement('button')
 		shift_column_left_button.className = 'shift-column-left-button'
+		shift_column_left_button.innerHTML += `<img src="img/arrow-icon.png" alt="arrow-icon" class="${'shift-column-left-arrow'} shift-arrow">`
 		root.appendChild(shift_column_left_button)
 	}
 	return root
@@ -345,7 +350,6 @@ add_column(grid_wall+3,5,grid_ceiling, color_preset_columns[2], '&beta;')
 add_column(grid_wall+4,5,grid_ceiling, color_preset_columns[3], '&gamma;')
 add_column(grid_wall+5,5,grid_ceiling, color_preset_columns[4], '&delta;')
 
-console.log(grid_tire_set, grid_slot_set, options_element_set, grid_cells_set)
 
 
 
