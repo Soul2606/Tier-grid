@@ -1,11 +1,20 @@
 
 
 
-const form_submit_button = document.getElementById('form-submit-button')
+function get<T extends HTMLElement = HTMLElement>(id:string) {
+	const el = document.getElementById(id)
+	if (!el) throw new Error(`cannot get element ${id}`);
+	return el as T
+}
+
+
+
+
+const form_submit_button = get('form-submit-button')
 form_submit_button.addEventListener('click', ()=>{
-	const input_image_files = document.getElementById('input-image-files')
-	const input_rows = Number.parseInt(document.getElementById('amount-of-rows').value)
-	const input_columns = Number.parseInt(document.getElementById('amount-of-columns').value)
+	const input_image_files = get<HTMLInputElement>('input-image-files')
+	const input_rows = Number.parseInt(get<HTMLInputElement>('amount-of-rows').value)
+	const input_columns = Number.parseInt(get<HTMLInputElement>('amount-of-columns').value)
 
 	
 	const files = input_image_files.files
@@ -14,7 +23,7 @@ form_submit_button.addEventListener('click', ()=>{
 		if (file) {
 			const reader = new FileReader()
 			reader.onload = function (e) {
-				document.getElementById('image-container').appendChild(create_draggable_image(e.target.result))
+				get('image-container').appendChild(create_draggable_image(e.target.result))
 			}
 			reader.readAsDataURL(file)
 		}
@@ -94,25 +103,25 @@ const grid_wall = 2
 const grid_ceiling = 2
 
 
-const grid_tire_set = new Set()
-const grid_slot_set = new Set()
-const options_element_set = new Set()
-const grid_cells_set = new Set()
+const grid_tire_set =       new Set<HTMLElement>()
+const grid_slot_set =       new Set<HTMLElement>()
+const options_element_set = new Set<HTMLElement>()
+const grid_cells_set =      new Set<HTMLElement>()
 
 
 
 
-const main_grid = document.getElementById('main-grid')
-const add_column_button = document.getElementById('add-column-button')
-const add_row_button = document.getElementById('add-row-button')
-const columns_description_container = document.getElementById('columns-description-container')
-const row_description_container = document.getElementById('row-description-container')
+const main_grid = get('main-grid')
+const add_column_button = get('add-column-button')
+const add_row_button = get('add-row-button')
+const columns_description_container = get('columns-description-container')
+const row_description_container = get('row-description-container')
 
 
 
 
 
-function add_row(start_row, columns_amount, start_column, color, text_content) {
+function add_row(start_row:number, columns_amount:number, start_column:number, color:string, text_content:string) {
 	if (typeof columns_amount === 'number' && typeof start_row === 'number' && typeof start_column === 'number') {
 		const grid_tier = document.createElement('div')
 		grid_tier.className = 'grid-rect grid-tier'
@@ -139,9 +148,9 @@ function add_row(start_row, columns_amount, start_column, color, text_content) {
 		options_element_set.add(lane_options)
 
 		add_row_button.style.gridRow = `${start_row+1}/${start_row+2}`
-		row_description_container.style.gridRowEnd = start_row+1
+		row_description_container.style.gridRowEnd = String(start_row+1)
 
-		const column_options_elements = document.getElementsByClassName('column-options')
+		const column_options_elements = document.querySelectorAll<HTMLElement>('.column-options')
 		for (const element of column_options_elements) {
 			element.style.gridRow = `${start_row+1}/${start_row+2}`
 		}
@@ -155,7 +164,7 @@ function add_row(start_row, columns_amount, start_column, color, text_content) {
 
 
 
-function add_column(start_column, rows_amount, start_row, color, text_content) {
+function add_column(start_column:number, rows_amount:number, start_row:number, color:string, text_content:string) {
 	if (typeof rows_amount === 'number' && typeof start_row === 'number' && typeof start_column === 'number') {
 		const grid_tier = document.createElement('div')
 		grid_tier.className = 'grid-rect grid-tier'
@@ -182,9 +191,9 @@ function add_column(start_column, rows_amount, start_row, color, text_content) {
 		options_element_set.add(lane_options)
 
 		add_column_button.style.gridColumn = `${start_column+1}/${start_column+2}`
-		columns_description_container.style.gridColumnEnd = start_column+1
+		columns_description_container.style.gridColumnEnd = String(start_column+1)
 
-		const row_options_elements = document.getElementsByClassName('row-options')
+		const row_options_elements = document.querySelectorAll<HTMLElement>('.row-options')
 		for (const element of row_options_elements) {
 			element.style.gridColumn = `${start_column+1}/${start_column+2}`
 		}
@@ -198,7 +207,7 @@ function add_column(start_column, rows_amount, start_row, color, text_content) {
 
 
 
-function get_grid_area(start_row, start_column, end_row, end_column, elements_to_check) {
+function get_grid_area(start_row:number, start_column:number, end_row:number, end_column:number, elements_to_check:readonly HTMLElement[]) {
 	return Array.from(elements_to_check).filter(element=>{
 		const style = window.getComputedStyle(element)
 		return Number(style.gridRowStart) >= start_row&&
@@ -211,7 +220,7 @@ function get_grid_area(start_row, start_column, end_row, end_column, elements_to
 
 
 
-function remove_row(start_row, start_column) {
+function remove_row(start_row:number, start_column:number) {
 	const elements_to_check = Array.from(grid_cells_set)
 	const elements_to_remove = get_grid_area(start_row, start_column, start_row+1, Infinity, elements_to_check)
 	for (const element of elements_to_remove) {
@@ -222,14 +231,14 @@ function remove_row(start_row, start_column) {
 		element.remove()
 	}
 	shift_grid_elements(get_grid_area(start_row+1,1,Infinity,Infinity,Array.from(grid_cells_set)),0,-1)
-	row_description_container.style.gridRowEnd = Number(row_description_container.style.gridRowEnd)-1
+	row_description_container.style.gridRowEnd = String(Number(row_description_container.style.gridRowEnd)-1)
 	rows--
 }
 
 
 
 
-function remove_column(start_column, start_row) {
+function remove_column(start_column:number, start_row:number) {
 	const elements_to_check = Array.from(grid_cells_set)
 	const elements_to_remove = get_grid_area(start_row, start_column, Infinity, start_column+1, elements_to_check)
 	for (const element of elements_to_remove) {
@@ -240,25 +249,19 @@ function remove_column(start_column, start_row) {
 		element.remove()
 	}
 	shift_grid_elements(get_grid_area(1,start_column+1,Infinity,Infinity,Array.from(grid_cells_set)),-1,0)
-	row_description_container.style.gridColumnEnd = Number(row_description_container.style.gridColumnEnd) - 1
+	row_description_container.style.gridColumnEnd = String(Number(row_description_container.style.gridColumnEnd) - 1)
 	columns--
 }
 
 
 
 
-function shift_grid_elements(elements_to_move, x, y) {
-	if ((!Array.isArray(elements_to_move))||(!typeof x === 'number')||(!typeof y === 'number')) {
-		throw new Error("Invalid parameters");
-	}
+function shift_grid_elements(elements_to_move:readonly HTMLElement[], x:number, y:number) {
 	for (const element of elements_to_move) {
-		if (!element instanceof HTMLElement) {
-			throw new Error("Array contains non HTMLElement elements");
-		}
-		element.style.gridColumnStart = Number(element.style.gridColumnStart) + x
-		element.style.gridColumnEnd = Number(element.style.gridColumnEnd) + x
-		element.style.gridRowStart = Number(element.style.gridRowStart) + y
-		element.style.gridRowEnd = Number(element.style.gridRowEnd) + y
+		element.style.gridColumnStart = String(Number(element.style.gridColumnStart) + x)
+		element.style.gridColumnEnd =   String(Number(element.style.gridColumnEnd) + x)
+		element.style.gridRowStart =    String(Number(element.style.gridRowStart) + y)
+		element.style.gridRowEnd =      String(Number(element.style.gridRowEnd) + y)
 	}
 }
 
