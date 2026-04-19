@@ -13,17 +13,20 @@ function get<T extends HTMLElement = HTMLElement>(id:string) {
 const form_submit_button = get('form-submit-button')
 form_submit_button.addEventListener('click', ()=>{
 	const input_image_files = get<HTMLInputElement>('input-image-files')
-	const input_rows = Number.parseInt(get<HTMLInputElement>('amount-of-rows').value)
-	const input_columns = Number.parseInt(get<HTMLInputElement>('amount-of-columns').value)
 
-	
 	const files = input_image_files.files
-	console.log(files)
+	if (files === null) {
+		console.log("Cannot get files");
+		return
+	}
+	
 	for (const file of files) {			
 		if (file) {
 			const reader = new FileReader()
 			reader.onload = function (e) {
-				get('image-container').appendChild(create_draggable_image(e.target.result))
+				const result = e.target?.result
+				if (typeof result !== "string") return
+				get('image-container').appendChild(create_draggable_image(result))
 			}
 			reader.readAsDataURL(file)
 		}
@@ -34,8 +37,8 @@ form_submit_button.addEventListener('click', ()=>{
 
 
 let dragging = false
-let hovering_drag_destination = null
-const drag_destinations = document.getElementsByClassName('drag-destination')
+let hovering_drag_destination:null|HTMLElement = null
+const drag_destinations = document.querySelectorAll<HTMLElement>('.drag-destination')
 for (const drag_destination of drag_destinations) {
 	drag_destination.addEventListener('mouseover',()=>{
 		if (dragging) {
@@ -48,7 +51,7 @@ for (const drag_destination of drag_destinations) {
 
 
 
-function create_draggable_image(src){
+function create_draggable_image(src:string){
 	const root = document.createElement('img')
 	root.className = 'image'
 	root.src = src
@@ -73,7 +76,7 @@ function create_draggable_image(src){
 		}
 		window.addEventListener('mouseup',end_drag)
 
-		const mouse_move = event=>{
+		const mouse_move = (event:MouseEvent) => {
 			if (event instanceof MouseEvent) {	
 				const x = event.pageX
 				const y = event.pageY		
@@ -90,11 +93,11 @@ function create_draggable_image(src){
 
 
 
-const color_preset_rows = ['rgb(255, 127, 127)','rgb(255, 191, 127)','rgb(255, 223, 127)','rgb(255, 255, 127)','rgb(191, 255, 127)','rgb(127, 255, 127)','rgb(127, 255, 249)']
-const color_preset_columns = ['rgb(255, 127, 251)','rgb(225, 127, 255)','rgb(180, 127, 255)','rgb(133, 127, 255)','rgb(127, 159, 255)','rgb(127, 204, 255)','rgb(127, 255, 249)']
+const color_preset_rows = ['rgb(255, 127, 127)','rgb(255, 191, 127)','rgb(255, 223, 127)','rgb(255, 255, 127)','rgb(191, 255, 127)','rgb(127, 255, 127)','rgb(127, 255, 249)'] as const
+const color_preset_columns = ['rgb(255, 127, 251)','rgb(225, 127, 255)','rgb(180, 127, 255)','rgb(133, 127, 255)','rgb(127, 159, 255)','rgb(127, 204, 255)','rgb(127, 255, 249)'] as const
 
-const name_preset_rows = ['S','A','B','C','D','E','F']
-const name_preset_columns = ['&omega;','&alpha;','&beta;','&gamma;','&delta;','&epsilon;','&zeta;','&eta;']
+const name_preset_rows = ['S','A','B','C','D','E','F'] as const
+const name_preset_columns = ['&omega;','&alpha;','&beta;','&gamma;','&delta;','&epsilon;','&zeta;','&eta;'] as const
 
 
 
@@ -363,14 +366,18 @@ let columns = 5
 
 
 add_row_button.addEventListener('click',()=>{
-	add_row(rows+grid_ceiling+1,columns,grid_wall,color_preset_rows[rows],name_preset_rows[rows])
+	const color = color_preset_rows[rows]??""
+	const name = name_preset_rows[rows]??"none"
+	add_row(rows+grid_ceiling+1,columns,grid_wall,color,name)
 	rows++
 })
 
 
 
 add_column_button.addEventListener('click',()=>{
-	add_column(columns+grid_ceiling+1,rows,grid_wall,color_preset_columns[columns],name_preset_columns[columns])
+	const color = color_preset_columns[columns]??""
+	const name = name_preset_columns[columns]??"none"
+	add_column(columns+grid_ceiling+1,rows,grid_wall,color,name)
 	columns++
 })
 
