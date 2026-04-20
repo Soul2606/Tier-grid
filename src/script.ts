@@ -28,6 +28,24 @@ function create<K extends keyof HTMLElementTagNameMap>(
 
 
 
+type GridArea = Readonly<{
+	rowStart:   number
+	columnStart:number
+	rowEnd:     number
+	columnEnd:  number
+}>
+
+function getArea(el:HTMLElement):GridArea {
+	return {
+		rowStart:   Number(el.style.gridRowStart),
+		columnStart:Number(el.style.gridColumnStart),
+		rowEnd:     Number(el.style.gridRowEnd),
+		columnEnd:  Number(el.style.gridColumnEnd),
+	}
+}
+
+
+
 const formSubmitButton = get('form-submit-button')
 const imageContainer = get("image-container")
 formSubmitButton.addEventListener('click', ()=>{
@@ -217,38 +235,23 @@ function addColumn(startColumn:number, rowsAmount:number, startRow:number, color
 
 
 
-function getGridArea(startRow:number, startColumn:number, endRow:number, endColumn:number, elementsToCheck:readonly HTMLElement[]) {
-	return Array.from(elementsToCheck).filter(element=>{
-		const style = window.getComputedStyle(element)
-		return Number(style.gridRowStart) >= startRow&&
-		Number(style.gridRowEnd) <= endRow&&
-		Number(style.gridColumnStart) >= startColumn&&
-		Number(style.gridColumnEnd) <= endColumn
-	})
+function removeRow(startRow:number) {
+	const elementsToRemove = getAll("grid-cell").filter(el => getArea(el).rowStart === startRow)
+	for (const element of elementsToRemove) {
+		element.remove()
+	}
+	shiftGridElements(getAll("grid-cell").filter(el => getArea(el).rowStart > startRow),0,-1)
 }
 
 
 
 
-function removeRow(startRow:number, startColumn:number) {
-	const elementsToCheck = getAll("grid-cell")
-	const elementsToRemove = getGridArea(startRow, startColumn, startRow+1, Infinity, elementsToCheck)
+function removeColumn(startColumn:number) {
+	const elementsToRemove = getAll("grid-cell").filter(el => getArea(el).columnStart === startColumn)
 	for (const element of elementsToRemove) {
 		element.remove()
 	}
-	shiftGridElements(getGridArea(startRow+1,1,Infinity,Infinity,getAll("grid-cell")),0,-1)
-}
-
-
-
-
-function removeColumn(startColumn:number, startRow:number) {
-	const elementsToCheck = getAll("grid-cell")
-	const elementsToRemove = getGridArea(startRow, startColumn, Infinity, startColumn+1, elementsToCheck)
-	for (const element of elementsToRemove) {
-		element.remove()
-	}
-	shiftGridElements(getGridArea(1,startColumn+1,Infinity,Infinity,getAll("grid-cell")),-1,0)
+	shiftGridElements(getAll("grid-cell").filter(el => getArea(el).columnStart > startColumn),-1,0)
 }
 
 
@@ -280,23 +283,25 @@ function createLaneOptions(axis: Axis) {
 	const removeBtn = create('button')
 	removeBtn.className = `remove-lane-button remove-${axis}-button`
 	removeBtn.onclick = () => {
-		if (isRow) removeRow(getIndex(), gridWall)
-		else removeColumn(getIndex(), gridCeiling)
+		if (isRow) removeRow(getIndex())
+		else removeColumn(getIndex())
 	}
 	root.append(removeBtn)
 
 	function shift(dir: 1 | -1) {
 		const i = getIndex()
+		if (i <= 2 && dir === -1) return
+		if (i > (isRow ? rows() : columns()) && dir === 1) return
 		const other = i + dir
 		const cells = getAll("grid-cell")
 
 		const a = isRow
-			? getGridArea(i, gridCeiling, i + 1, Infinity, cells)
-			: getGridArea(gridWall, i, Infinity, i + 1, cells)
+			? cells.filter(c => getArea(c).rowStart === i)
+			: cells.filter(c => getArea(c).columnStart === i)
 
 		const b = isRow
-			? getGridArea(other, gridCeiling, other + 1, Infinity, cells)
-			: getGridArea(gridWall, other, Infinity, other + 1, cells)
+			? cells.filter(c => getArea(c).rowStart === other)
+			: cells.filter(c => getArea(c).columnStart === other)
 
 		shiftGridElements(a, isRow ? 0 : dir, isRow ? dir : 0)
 		shiftGridElements(b, isRow ? 0 : -dir, isRow ? -dir : 0)
