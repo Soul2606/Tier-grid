@@ -124,37 +124,37 @@ const rowDescriptionContainer = get('row-description-container')
 
 
 
-function addRow(start_row:number, columns_amount:number, start_column:number, color:string, text_content:string) {
-	const grid_tier = document.createElement('div')
-	grid_tier.className = 'grid-rect grid-tier'
-	grid_tier.style.gridRow = `${start_row}/${start_row+1}`
-	grid_tier.style.gridColumn = `${start_column}/${start_column+1}`
-	grid_tier.style.backgroundColor = color
-	grid_tier.innerHTML = `<p class="tier-name-text">${text_content}</p>`
-	mainGrid.appendChild(grid_tier)
-	gridTireSet.add(grid_tier)
+function addRow(startRow:number, columnsAmount:number, startColumn:number, color:string, textContent:string) {
+	const gridTier = document.createElement('div')
+	gridTier.className = 'grid-rect grid-tier'
+	gridTier.style.gridRow = `${startRow}/${startRow+1}`
+	gridTier.style.gridColumn = `${startColumn}/${startColumn+1}`
+	gridTier.style.backgroundColor = color
+	gridTier.innerHTML = `<p class="tier-name-text">${textContent}</p>`
+	mainGrid.appendChild(gridTier)
+	gridTireSet.add(gridTier)
 
-	for (let i = 0; i < columns_amount; i++) {
-		const grid_slot = document.createElement('div')
-		grid_slot.className = 'grid-rect drag-destination grid-slot'
-		grid_slot.style.gridRow = `${start_row}/${start_row+1}`
-		grid_slot.style.gridColumn = `${i+start_column+1}/${i+start_column+2}`
-		mainGrid.appendChild(grid_slot)
-		gridSlotSet.add(grid_slot)
+	for (let i = 0; i < columnsAmount; i++) {
+		const gridSlot = document.createElement('div')
+		gridSlot.className = 'grid-rect drag-destination grid-slot'
+		gridSlot.style.gridRow = `${startRow}/${startRow+1}`
+		gridSlot.style.gridColumn = `${i+startColumn+1}/${i+startColumn+2}`
+		mainGrid.appendChild(gridSlot)
+		gridSlotSet.add(gridSlot)
 	}
 
-	const lane_options = createLaneOptionsElements(true)
-	lane_options.style.gridRow = `${start_row}/${start_row+1}`
-	lane_options.style.gridColumn = `${columns_amount+start_column+1}/${columns_amount+start_column+2}`
-	mainGrid.appendChild(lane_options)
-	optionsElementSet.add(lane_options)
+	const laneOptions = createLaneOptionsElements(true)
+	laneOptions.style.gridRow = `${startRow}/${startRow+1}`
+	laneOptions.style.gridColumn = `${columnsAmount+startColumn+1}/${columnsAmount+startColumn+2}`
+	mainGrid.appendChild(laneOptions)
+	optionsElementSet.add(laneOptions)
 
-	addRowButton.style.gridRow = `${start_row+1}/${start_row+2}`
-	rowDescriptionContainer.style.gridRowEnd = String(start_row+1)
+	addRowButton.style.gridRow = `${startRow+1}/${startRow+2}`
+	rowDescriptionContainer.style.gridRowEnd = String(startRow+1)
 
-	const column_options_elements = document.querySelectorAll<HTMLElement>('.column-options')
-	for (const element of column_options_elements) {
-		element.style.gridRow = `${start_row+1}/${start_row+2}`
+	const columnOptionsElements = document.querySelectorAll<HTMLElement>('.column-options')
+	for (const element of columnOptionsElements) {
+		element.style.gridRow = `${startRow+1}/${startRow+2}`
 	}
 
 	gridTireSet.forEach(element=>gridCellsSet.add(element))
@@ -166,37 +166,37 @@ function addRow(start_row:number, columns_amount:number, start_column:number, co
 
 
 
-function addColumn(start_column:number, rows_amount:number, start_row:number, color:string, text_content:string) {
-	const grid_tier = document.createElement('div')
-	grid_tier.className = 'grid-rect grid-tier'
-	grid_tier.style.gridColumn = `${start_column}/${start_column+1}`
-	grid_tier.style.gridRow = `${start_row}/${start_row+1}`
-	grid_tier.style.backgroundColor = color
-	grid_tier.innerHTML = `<p class="tier-name-text">${text_content}</p>`
-	mainGrid.appendChild(grid_tier)
-	gridTireSet.add(grid_tier)
+function addColumn(startColumn:number, rowsAmount:number, startRow:number, color:string, textContent:string) {
+	const gridTier = document.createElement('div')
+	gridTier.className = 'grid-rect grid-tier'
+	gridTier.style.gridColumn = `${startColumn}/${startColumn+1}`
+	gridTier.style.gridRow = `${startRow}/${startRow+1}`
+	gridTier.style.backgroundColor = color
+	gridTier.innerHTML = `<p class="tier-name-text">${textContent}</p>`
+	mainGrid.appendChild(gridTier)
+	gridTireSet.add(gridTier)
 
-	for (let i = 0; i < rows_amount; i++) {
-		const grid_slot = document.createElement('div')
-		grid_slot.className = 'grid-rect drag-destination grid-slot'
-		grid_slot.style.gridColumn = `${start_column}/${start_column+1}`
-		grid_slot.style.gridRow = `${i+start_row+1}/${i+start_row+2}`
-		mainGrid.appendChild(grid_slot)
-		gridSlotSet.add(grid_slot)
+	for (let i = 0; i < rowsAmount; i++) {
+		const gridSlot = document.createElement('div')
+		gridSlot.className = 'grid-rect drag-destination grid-slot'
+		gridSlot.style.gridColumn = `${startColumn}/${startColumn+1}`
+		gridSlot.style.gridRow = `${i+startRow+1}/${i+startRow+2}`
+		mainGrid.appendChild(gridSlot)
+		gridSlotSet.add(gridSlot)
 	}
 
-	const lane_options = createLaneOptionsElements(false)
-	lane_options.style.gridColumn = `${start_column}/${start_column+1}`
-	lane_options.style.gridRow = `${rows_amount+start_row+1}/${rows_amount+start_row+2}`
-	mainGrid.appendChild(lane_options)
-	optionsElementSet.add(lane_options)
+	const laneOptions = createLaneOptionsElements(false)
+	laneOptions.style.gridColumn = `${startColumn}/${startColumn+1}`
+	laneOptions.style.gridRow = `${rowsAmount+startRow+1}/${rowsAmount+startRow+2}`
+	mainGrid.appendChild(laneOptions)
+	optionsElementSet.add(laneOptions)
 
-	addColumnButton.style.gridColumn = `${start_column+1}/${start_column+2}`
-	columnsDescriptionContainer.style.gridColumnEnd = String(start_column+1)
+	addColumnButton.style.gridColumn = `${startColumn+1}/${startColumn+2}`
+	columnsDescriptionContainer.style.gridColumnEnd = String(startColumn+1)
 
-	const row_options_elements = document.querySelectorAll<HTMLElement>('.row-options')
-	for (const element of row_options_elements) {
-		element.style.gridColumn = `${start_column+1}/${start_column+2}`
+	const rowOptionsElements = document.querySelectorAll<HTMLElement>('.row-options')
+	for (const element of rowOptionsElements) {
+		element.style.gridColumn = `${startColumn+1}/${startColumn+2}`
 	}
 
 	gridTireSet.forEach(element=>gridCellsSet.add(element))
@@ -208,30 +208,30 @@ function addColumn(start_column:number, rows_amount:number, start_row:number, co
 
 
 
-function getGridArea(start_row:number, start_column:number, end_row:number, end_column:number, elements_to_check:readonly HTMLElement[]) {
-	return Array.from(elements_to_check).filter(element=>{
+function getGridArea(startRow:number, startColumn:number, endRow:number, endColumn:number, elementsToCheck:readonly HTMLElement[]) {
+	return Array.from(elementsToCheck).filter(element=>{
 		const style = window.getComputedStyle(element)
-		return Number(style.gridRowStart) >= start_row&&
-		Number(style.gridRowEnd) <= end_row&&
-		Number(style.gridColumnStart) >= start_column&&
-		Number(style.gridColumnEnd) <= end_column
+		return Number(style.gridRowStart) >= startRow&&
+		Number(style.gridRowEnd) <= endRow&&
+		Number(style.gridColumnStart) >= startColumn&&
+		Number(style.gridColumnEnd) <= endColumn
 	})
 }
 
 
 
 
-function removeRow(start_row:number, start_column:number) {
-	const elements_to_check = Array.from(gridCellsSet)
-	const elements_to_remove = getGridArea(start_row, start_column, start_row+1, Infinity, elements_to_check)
-	for (const element of elements_to_remove) {
+function removeRow(startRow:number, startColumn:number) {
+	const elementsToCheck = Array.from(gridCellsSet)
+	const elementsToRemove = getGridArea(startRow, startColumn, startRow+1, Infinity, elementsToCheck)
+	for (const element of elementsToRemove) {
 		gridTireSet.delete(element)
 		gridSlotSet.delete(element)
 		optionsElementSet.delete(element)
 		gridCellsSet.delete(element)
 		element.remove()
 	}
-	shiftGridElements(getGridArea(start_row+1,1,Infinity,Infinity,Array.from(gridCellsSet)),0,-1)
+	shiftGridElements(getGridArea(startRow+1,1,Infinity,Infinity,Array.from(gridCellsSet)),0,-1)
 	rowDescriptionContainer.style.gridRowEnd = String(Number(rowDescriptionContainer.style.gridRowEnd)-1)
 	rows--
 }
@@ -239,17 +239,17 @@ function removeRow(start_row:number, start_column:number) {
 
 
 
-function removeColumn(start_column:number, start_row:number) {
-	const elements_to_check = Array.from(gridCellsSet)
-	const elements_to_remove = getGridArea(start_row, start_column, Infinity, start_column+1, elements_to_check)
-	for (const element of elements_to_remove) {
+function removeColumn(startColumn:number, startRow:number) {
+	const elementsToCheck = Array.from(gridCellsSet)
+	const elementsToRemove = getGridArea(startRow, startColumn, Infinity, startColumn+1, elementsToCheck)
+	for (const element of elementsToRemove) {
 		gridTireSet.delete(element)
 		gridSlotSet.delete(element)
 		optionsElementSet.delete(element)
 		gridCellsSet.delete(element)
 		element.remove()
 	}
-	shiftGridElements(getGridArea(1,start_column+1,Infinity,Infinity,Array.from(gridCellsSet)),-1,0)
+	shiftGridElements(getGridArea(1,startColumn+1,Infinity,Infinity,Array.from(gridCellsSet)),-1,0)
 	rowDescriptionContainer.style.gridColumnEnd = String(Number(rowDescriptionContainer.style.gridColumnEnd) - 1)
 	columns--
 }
@@ -257,8 +257,8 @@ function removeColumn(start_column:number, start_row:number) {
 
 
 
-function shiftGridElements(elements_to_move:readonly HTMLElement[], x:number, y:number) {
-	for (const element of elements_to_move) {
+function shiftGridElements(elementsToMove:readonly HTMLElement[], x:number, y:number) {
+	for (const element of elementsToMove) {
 		element.style.gridColumnStart = String(Number(element.style.gridColumnStart) + x)
 		element.style.gridColumnEnd =   String(Number(element.style.gridColumnEnd) + x)
 		element.style.gridRowStart =    String(Number(element.style.gridRowStart) + y)
@@ -275,67 +275,67 @@ function createLaneOptionsElements(row=true) {
 	root.className = 'grid-rect lane-options'
 	root.classList.add(row?'row-options':'column-options')
 
-	const remove_lane_button = document.createElement('button')
-	remove_lane_button.className = 'remove-lane-button'
-	remove_lane_button.classList.add(row?'remove-row-button':'remove-column-button')
-	root.appendChild(remove_lane_button)
+	const removeLaneButton = document.createElement('button')
+	removeLaneButton.className = 'remove-lane-button'
+	removeLaneButton.classList.add(row?'remove-row-button':'remove-column-button')
+	root.appendChild(removeLaneButton)
 
 	if (row) {
-		remove_lane_button.addEventListener('click',()=>{
+		removeLaneButton.addEventListener('click',()=>{
 			removeRow(Number(root.style.gridRowStart),gridWall)
 		})
 	} else {
-		remove_lane_button.addEventListener('click',()=>{
+		removeLaneButton.addEventListener('click',()=>{
 			removeColumn(Number(root.style.gridColumnStart),gridWall)
 		})
 	}
 
 	if (row) {
-		const shift_row_down_button = document.createElement('button')
-		shift_row_down_button.className = 'shift-row-down-button'
+		const shiftRowDownButton = document.createElement('button')
+		shiftRowDownButton.className = 'shift-row-down-button'
 
-		shift_row_down_button.addEventListener('click',()=>{
-			const this_row = Number(root.style.gridRowStart)
-			const row_below = Number(root.style.gridRowStart)+1
-			const elements_on_this_row = getGridArea(this_row,gridCeiling,this_row+1,Infinity,Array.from(gridCellsSet))
-			const elements_on_row_below = getGridArea(row_below,gridCeiling,row_below+1,Infinity,Array.from(gridCellsSet))
-			if (elements_on_row_below.filter(e=>e.classList.contains('grid-slot')).length === 0) {
+		shiftRowDownButton.addEventListener('click',()=>{
+			const thisRow = Number(root.style.gridRowStart)
+			const rowBelow = Number(root.style.gridRowStart)+1
+			const elementsOnThisRow = getGridArea(thisRow,gridCeiling,thisRow+1,Infinity,Array.from(gridCellsSet))
+			const elementsOnRowBelow = getGridArea(rowBelow,gridCeiling,rowBelow+1,Infinity,Array.from(gridCellsSet))
+			if (elementsOnRowBelow.filter(e=>e.classList.contains('grid-slot')).length === 0) {
 				return
 			}
-			shiftGridElements(elements_on_this_row,0,1)
-			shiftGridElements(elements_on_row_below,0,-1)
+			shiftGridElements(elementsOnThisRow,0,1)
+			shiftGridElements(elementsOnRowBelow,0,-1)
 		})
 
-		shift_row_down_button.innerHTML += `<img src="img/arrow-icon.png" alt="arrow-icon" class="${'shift-row-down-arrow'} shift-arrow">`
-		root.appendChild(shift_row_down_button)
+		shiftRowDownButton.innerHTML += `<img src="img/arrow-icon.png" alt="arrow-icon" class="${'shift-row-down-arrow'} shift-arrow">`
+		root.appendChild(shiftRowDownButton)
 
-		const shift_row_up_button = document.createElement('button')
-		shift_row_up_button.className = 'shift-row-up-button'
+		const shiftRowUpButton = document.createElement('button')
+		shiftRowUpButton.className = 'shift-row-up-button'
 
-		shift_row_up_button.addEventListener('click',()=>{
-			const this_row = Number(root.style.gridRowStart)
-			const row_above = Number(root.style.gridRowStart)-1
-			const elements_on_this_row = getGridArea(this_row,2,this_row+1,Infinity,Array.from(gridCellsSet))
-			const elements_on_row_above = getGridArea(row_above,2,row_above+1,Infinity,Array.from(gridCellsSet))
-			if (elements_on_row_above.filter(e=>e.classList.contains('grid-slot')).length === 0) {
+		shiftRowUpButton.addEventListener('click',()=>{
+			const thisRow = Number(root.style.gridRowStart)
+			const rowAbove = Number(root.style.gridRowStart)-1
+			const elementsOnThisRow = getGridArea(thisRow,2,thisRow+1,Infinity,Array.from(gridCellsSet))
+			const elementsOnRowAbove = getGridArea(rowAbove,2,rowAbove+1,Infinity,Array.from(gridCellsSet))
+			if (elementsOnRowAbove.filter(e=>e.classList.contains('grid-slot')).length === 0) {
 				return
 			}
-			shiftGridElements(elements_on_this_row,0,-1)
-			shiftGridElements(elements_on_row_above,0,1)
+			shiftGridElements(elementsOnThisRow,0,-1)
+			shiftGridElements(elementsOnRowAbove,0,1)
 		})
 
-		shift_row_up_button.innerHTML += `<img src="img/arrow-icon.png" alt="arrow-icon" class="${'shift-row-up-arrow'} shift-arrow">`
-		root.appendChild(shift_row_up_button)
+		shiftRowUpButton.innerHTML += `<img src="img/arrow-icon.png" alt="arrow-icon" class="${'shift-row-up-arrow'} shift-arrow">`
+		root.appendChild(shiftRowUpButton)
 	} else {
-		const shift_column_right_button = document.createElement('button')
-		shift_column_right_button.className = 'shift-column-right-button'
-		shift_column_right_button.innerHTML += `<img src="img/arrow-icon.png" alt="arrow-icon" class="${'shift-column-right-arrow'} shift-arrow">`
-		root.appendChild(shift_column_right_button)
+		const shiftColumnRightButton = document.createElement('button')
+		shiftColumnRightButton.className = 'shift-column-right-button'
+		shiftColumnRightButton.innerHTML += `<img src="img/arrow-icon.png" alt="arrow-icon" class="${'shift-column-right-arrow'} shift-arrow">`
+		root.appendChild(shiftColumnRightButton)
 
-		const shift_column_left_button = document.createElement('button')
-		shift_column_left_button.className = 'shift-column-left-button'
-		shift_column_left_button.innerHTML += `<img src="img/arrow-icon.png" alt="arrow-icon" class="${'shift-column-left-arrow'} shift-arrow">`
-		root.appendChild(shift_column_left_button)
+		const shiftColumnLeftButton = document.createElement('button')
+		shiftColumnLeftButton.className = 'shift-column-left-button'
+		shiftColumnLeftButton.innerHTML += `<img src="img/arrow-icon.png" alt="arrow-icon" class="${'shift-column-left-arrow'} shift-arrow">`
+		root.appendChild(shiftColumnLeftButton)
 	}
 	return root
 }
