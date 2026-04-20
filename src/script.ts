@@ -10,6 +10,24 @@ function get<T extends HTMLElement = HTMLElement>(id:string) {
 
 
 
+function getAll<T extends HTMLElement = HTMLElement>(className:string) {
+	return Array.from(document.querySelectorAll<T>("."+className))
+}
+
+
+
+
+function create<K extends keyof HTMLElementTagNameMap>(
+	element: K,
+	ns?: string
+): HTMLElementTagNameMap[K] {
+	if (ns) return document.createElementNS(ns, element) as HTMLElementTagNameMap[K]
+	return document.createElement(element)
+}
+
+
+
+
 const formSubmitButton = get('form-submit-button')
 formSubmitButton.addEventListener('click', ()=>{
 	const inputImageFiles = get<HTMLInputElement>('input-image-files')
@@ -52,7 +70,7 @@ for (const dest of dragDestinations) {
 
 
 function createDraggableImage(src:string){
-	const root = document.createElement('img')
+	const root = create('img')
 	root.className = 'image'
 	root.src = src
 
@@ -102,107 +120,78 @@ const namePresetColumns = ['&omega;','&alpha;','&beta;','&gamma;','&delta;','&ep
 
 
 //The Grid, as in the area of the grid that is added by the script does not start at 1,1 there are styling elements that and other stuff that push the grid down and right to these two constants below
-const gridWall = 2
-const gridCeiling = 2
-
-
-const gridTireSet =       new Set<HTMLElement>()
-const gridSlotSet =       new Set<HTMLElement>()
-const optionsElementSet = new Set<HTMLElement>()
-const gridCellsSet =      new Set<HTMLElement>()
-
-
+const gridWall = 1
+const gridCeiling = 1
 
 
 const mainGrid = get('main-grid')
 const addColumnButton = get('add-column-button')
 const addRowButton = get('add-row-button')
-const columnsDescriptionContainer = get('columns-description-container')
-const rowDescriptionContainer = get('row-description-container')
-
 
 
 
 
 function addRow(startRow:number, columnsAmount:number, startColumn:number, color:string, textContent:string) {
-	const gridTier = document.createElement('div')
-	gridTier.className = 'grid-rect grid-tier'
+	const gridTier = create('div')
+	gridTier.className = 'grid-cell grid-tier'
 	gridTier.style.gridRow = `${startRow}/${startRow+1}`
 	gridTier.style.gridColumn = `${startColumn}/${startColumn+1}`
 	gridTier.style.backgroundColor = color
 	gridTier.innerHTML = `<p class="tier-name-text">${textContent}</p>`
 	mainGrid.appendChild(gridTier)
-	gridTireSet.add(gridTier)
 
 	for (let i = 0; i < columnsAmount; i++) {
-		const gridSlot = document.createElement('div')
-		gridSlot.className = 'grid-rect drag-destination grid-slot'
+		const gridSlot = create('div')
+		gridSlot.className = 'grid-cell drag-destination grid-slot'
 		gridSlot.style.gridRow = `${startRow}/${startRow+1}`
 		gridSlot.style.gridColumn = `${i+startColumn+1}/${i+startColumn+2}`
 		mainGrid.appendChild(gridSlot)
-		gridSlotSet.add(gridSlot)
 	}
 
-	const laneOptions = createLaneOptionsElements(true)
+	const laneOptions = createRowOptions()
 	laneOptions.style.gridRow = `${startRow}/${startRow+1}`
 	laneOptions.style.gridColumn = `${columnsAmount+startColumn+1}/${columnsAmount+startColumn+2}`
 	mainGrid.appendChild(laneOptions)
-	optionsElementSet.add(laneOptions)
 
-	addRowButton.style.gridRow = `${startRow+1}/${startRow+2}`
-	rowDescriptionContainer.style.gridRowEnd = String(startRow+1)
 
-	const columnOptionsElements = document.querySelectorAll<HTMLElement>('.column-options')
+	const columnOptionsElements = getAll('column-options')
 	for (const element of columnOptionsElements) {
 		element.style.gridRow = `${startRow+1}/${startRow+2}`
-	}
-
-	gridTireSet.forEach(element=>gridCellsSet.add(element))
-	gridSlotSet.forEach(element=>gridCellsSet.add(element))
-	optionsElementSet.forEach(element=>gridCellsSet.add(element))	
-
+	}	
 }
 
 
 
 
 function addColumn(startColumn:number, rowsAmount:number, startRow:number, color:string, textContent:string) {
-	const gridTier = document.createElement('div')
-	gridTier.className = 'grid-rect grid-tier'
+	const gridTier = create('div')
+	gridTier.className = 'grid-cell grid-tier'
 	gridTier.style.gridColumn = `${startColumn}/${startColumn+1}`
 	gridTier.style.gridRow = `${startRow}/${startRow+1}`
 	gridTier.style.backgroundColor = color
 	gridTier.innerHTML = `<p class="tier-name-text">${textContent}</p>`
 	mainGrid.appendChild(gridTier)
-	gridTireSet.add(gridTier)
 
 	for (let i = 0; i < rowsAmount; i++) {
-		const gridSlot = document.createElement('div')
-		gridSlot.className = 'grid-rect drag-destination grid-slot'
+		const gridSlot = create('div')
+		gridSlot.className = 'grid-cell drag-destination grid-slot'
 		gridSlot.style.gridColumn = `${startColumn}/${startColumn+1}`
 		gridSlot.style.gridRow = `${i+startRow+1}/${i+startRow+2}`
 		mainGrid.appendChild(gridSlot)
-		gridSlotSet.add(gridSlot)
 	}
 
-	const laneOptions = createLaneOptionsElements(false)
+	const laneOptions = create("div")
+	laneOptions.textContent = "WIP"
+	laneOptions.style.color = "white"
 	laneOptions.style.gridColumn = `${startColumn}/${startColumn+1}`
 	laneOptions.style.gridRow = `${rowsAmount+startRow+1}/${rowsAmount+startRow+2}`
 	mainGrid.appendChild(laneOptions)
-	optionsElementSet.add(laneOptions)
 
-	addColumnButton.style.gridColumn = `${startColumn+1}/${startColumn+2}`
-	columnsDescriptionContainer.style.gridColumnEnd = String(startColumn+1)
 
-	const rowOptionsElements = document.querySelectorAll<HTMLElement>('.row-options')
+	const rowOptionsElements = getAll('row-options')
 	for (const element of rowOptionsElements) {
 		element.style.gridColumn = `${startColumn+1}/${startColumn+2}`
 	}
-
-	gridTireSet.forEach(element=>gridCellsSet.add(element))
-	gridSlotSet.forEach(element=>gridCellsSet.add(element))
-	optionsElementSet.forEach(element=>gridCellsSet.add(element))
-
 }
 
 
@@ -222,17 +211,12 @@ function getGridArea(startRow:number, startColumn:number, endRow:number, endColu
 
 
 function removeRow(startRow:number, startColumn:number) {
-	const elementsToCheck = Array.from(gridCellsSet)
+	const elementsToCheck = getAll("grid-cell")
 	const elementsToRemove = getGridArea(startRow, startColumn, startRow+1, Infinity, elementsToCheck)
 	for (const element of elementsToRemove) {
-		gridTireSet.delete(element)
-		gridSlotSet.delete(element)
-		optionsElementSet.delete(element)
-		gridCellsSet.delete(element)
 		element.remove()
 	}
-	shiftGridElements(getGridArea(startRow+1,1,Infinity,Infinity,Array.from(gridCellsSet)),0,-1)
-	rowDescriptionContainer.style.gridRowEnd = String(Number(rowDescriptionContainer.style.gridRowEnd)-1)
+	shiftGridElements(getGridArea(startRow+1,1,Infinity,Infinity,getAll("grid-cell")),0,-1)
 	rows--
 }
 
@@ -240,17 +224,12 @@ function removeRow(startRow:number, startColumn:number) {
 
 
 function removeColumn(startColumn:number, startRow:number) {
-	const elementsToCheck = Array.from(gridCellsSet)
+	const elementsToCheck = getAll("grid-cell")
 	const elementsToRemove = getGridArea(startRow, startColumn, Infinity, startColumn+1, elementsToCheck)
 	for (const element of elementsToRemove) {
-		gridTireSet.delete(element)
-		gridSlotSet.delete(element)
-		optionsElementSet.delete(element)
-		gridCellsSet.delete(element)
 		element.remove()
 	}
-	shiftGridElements(getGridArea(1,startColumn+1,Infinity,Infinity,Array.from(gridCellsSet)),-1,0)
-	rowDescriptionContainer.style.gridColumnEnd = String(Number(rowDescriptionContainer.style.gridColumnEnd) - 1)
+	shiftGridElements(getGridArea(1,startColumn+1,Infinity,Infinity,getAll("grid-cell")),-1,0)
 	columns--
 }
 
@@ -269,74 +248,55 @@ function shiftGridElements(elementsToMove:readonly HTMLElement[], x:number, y:nu
 
 
 
-function createLaneOptionsElements(row=true) {
+function createRowOptions() {
 	//If row is false, assume column
-	const root = document.createElement('div')
-	root.className = 'grid-rect lane-options'
-	root.classList.add(row?'row-options':'column-options')
+	const root = create('div')
+	root.className = 'grid-cell lane-options row-options'
 
-	const removeLaneButton = document.createElement('button')
-	removeLaneButton.className = 'remove-lane-button'
-	removeLaneButton.classList.add(row?'remove-row-button':'remove-column-button')
+	const removeLaneButton = create('button')
+	removeLaneButton.className = 'remove-lane-button remove-row-button'
 	root.appendChild(removeLaneButton)
 
-	if (row) {
-		removeLaneButton.addEventListener('click',()=>{
-			removeRow(Number(root.style.gridRowStart),gridWall)
-		})
-	} else {
-		removeLaneButton.addEventListener('click',()=>{
-			removeColumn(Number(root.style.gridColumnStart),gridWall)
-		})
-	}
+	removeLaneButton.addEventListener('click',()=>{
+		removeRow(Number(root.style.gridRowStart),gridWall)
+	})
 
-	if (row) {
-		const shiftRowDownButton = document.createElement('button')
-		shiftRowDownButton.className = 'shift-row-down-button'
+	const shiftRowDownButton = create('button')
+	shiftRowDownButton.className = 'shift-row-down-button'
 
-		shiftRowDownButton.addEventListener('click',()=>{
-			const thisRow = Number(root.style.gridRowStart)
-			const rowBelow = Number(root.style.gridRowStart)+1
-			const elementsOnThisRow = getGridArea(thisRow,gridCeiling,thisRow+1,Infinity,Array.from(gridCellsSet))
-			const elementsOnRowBelow = getGridArea(rowBelow,gridCeiling,rowBelow+1,Infinity,Array.from(gridCellsSet))
-			if (elementsOnRowBelow.filter(e=>e.classList.contains('grid-slot')).length === 0) {
-				return
-			}
-			shiftGridElements(elementsOnThisRow,0,1)
-			shiftGridElements(elementsOnRowBelow,0,-1)
-		})
+	shiftRowDownButton.addEventListener('click',()=>{
+		const thisRow = Number(root.style.gridRowStart)
+		const rowBelow = Number(root.style.gridRowStart)+1
+		const elementsOnThisRow =  getGridArea(thisRow,  gridCeiling, thisRow+1,  Infinity, getAll("grid-cell"))
+		const elementsOnRowBelow = getGridArea(rowBelow, gridCeiling, rowBelow+1, Infinity, getAll("grid-cell"))
+		if (elementsOnRowBelow.filter(e=>e.classList.contains('grid-slot')).length === 0) {
+			return
+		}
+		shiftGridElements(elementsOnThisRow,0,1)
+		shiftGridElements(elementsOnRowBelow,0,-1)
+	})
 
-		shiftRowDownButton.innerHTML += `<img src="img/arrow-icon.png" alt="arrow-icon" class="${'shift-row-down-arrow'} shift-arrow">`
-		root.appendChild(shiftRowDownButton)
+	shiftRowDownButton.innerHTML += `<img src="img/arrow-icon.png" alt="arrow-icon" class="${'shift-row-down-arrow'} shift-arrow">`
+	root.appendChild(shiftRowDownButton)
 
-		const shiftRowUpButton = document.createElement('button')
-		shiftRowUpButton.className = 'shift-row-up-button'
+	const shiftRowUpButton = create('button')
+	shiftRowUpButton.className = 'shift-row-up-button'
 
-		shiftRowUpButton.addEventListener('click',()=>{
-			const thisRow = Number(root.style.gridRowStart)
-			const rowAbove = Number(root.style.gridRowStart)-1
-			const elementsOnThisRow = getGridArea(thisRow,2,thisRow+1,Infinity,Array.from(gridCellsSet))
-			const elementsOnRowAbove = getGridArea(rowAbove,2,rowAbove+1,Infinity,Array.from(gridCellsSet))
-			if (elementsOnRowAbove.filter(e=>e.classList.contains('grid-slot')).length === 0) {
-				return
-			}
-			shiftGridElements(elementsOnThisRow,0,-1)
-			shiftGridElements(elementsOnRowAbove,0,1)
-		})
+	shiftRowUpButton.addEventListener('click',()=>{
+		const thisRow = Number(root.style.gridRowStart)
+		const rowAbove = Number(root.style.gridRowStart)-1
+		const elementsOnThisRow =  getGridArea(thisRow,  gridWall, thisRow+1,  Infinity, getAll("grid-cell"))
+		const elementsOnRowAbove = getGridArea(rowAbove, gridWall, rowAbove+1, Infinity, getAll("grid-cell"))
+		if (elementsOnRowAbove.filter(e=>e.classList.contains('grid-slot')).length === 0) {
+			return
+		}
+		shiftGridElements(elementsOnThisRow,0,-1)
+		shiftGridElements(elementsOnRowAbove,0,1)
+	})
 
-		shiftRowUpButton.innerHTML += `<img src="img/arrow-icon.png" alt="arrow-icon" class="${'shift-row-up-arrow'} shift-arrow">`
-		root.appendChild(shiftRowUpButton)
-	} else {
-		const shiftColumnRightButton = document.createElement('button')
-		shiftColumnRightButton.className = 'shift-column-right-button'
-		shiftColumnRightButton.innerHTML += `<img src="img/arrow-icon.png" alt="arrow-icon" class="${'shift-column-right-arrow'} shift-arrow">`
-		root.appendChild(shiftColumnRightButton)
-
-		const shiftColumnLeftButton = document.createElement('button')
-		shiftColumnLeftButton.className = 'shift-column-left-button'
-		shiftColumnLeftButton.innerHTML += `<img src="img/arrow-icon.png" alt="arrow-icon" class="${'shift-column-left-arrow'} shift-arrow">`
-		root.appendChild(shiftColumnLeftButton)
-	}
+	shiftRowUpButton.innerHTML += `<img src="img/arrow-icon.png" alt="arrow-icon" class="${'shift-row-up-arrow'} shift-arrow">`
+	root.appendChild(shiftRowUpButton)
+	
 	return root
 }
 

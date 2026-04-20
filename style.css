@@ -9,6 +9,7 @@
 .main-grid-container{
     padding: 2px;
     background-color: black;
+    display: grid;
 }
 
 .preview-images-container{
@@ -51,12 +52,16 @@
     min-height: 25px;
 }
 
+.add-button{
+    height: 50px;
+    width: 50px;
+}
+
 .add-column-button{
     background-color: rgb(35, 35, 35);
 }
 
 .add-row-button{
-    min-height: 100px;
     background-color: rgb(35, 35, 35);
 }
 
@@ -69,7 +74,7 @@
     min-height: 100px;
 }
 
-.grid-rect{
+.grid-cell{
     min-width: 100px;
     min-height: 100px;
 }
