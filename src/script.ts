@@ -29,6 +29,7 @@ function create<K extends keyof HTMLElementTagNameMap>(
 
 
 const formSubmitButton = get('form-submit-button')
+const imageContainer = get("image-container")
 formSubmitButton.addEventListener('click', ()=>{
 	const inputImageFiles = get<HTMLInputElement>('input-image-files')
 
@@ -44,7 +45,7 @@ formSubmitButton.addEventListener('click', ()=>{
 			reader.onload = function (e) {
 				const result = e.target?.result
 				if (typeof result !== "string") return
-				get('image-container').append(createDraggableImage(result))
+				imageContainer.append(createDraggableImage(result))
 			}
 			reader.readAsDataURL(file)
 		}
@@ -54,21 +55,15 @@ formSubmitButton.addEventListener('click', ()=>{
 
 
 
+imageContainer.addEventListener("mouseenter", () => {
+	dragDestination = imageContainer
+})
+
+
+
+
 let dragging = false
 let dragDestination:null|HTMLElement = null
-const dragDestinations = document.querySelectorAll<HTMLElement>('.drag-destination')
-for (const dest of dragDestinations) {
-	dest.addEventListener('mouseover',()=>{
-		if (dragging) {
-			console.log('set drag destination:', dest)
-			dragDestination = dest
-		}
-	})
-}
-
-
-
-
 function createDraggableImage(src:string){
 	const root = create('img')
 	root.className = 'image'
@@ -111,11 +106,22 @@ function createDraggableImage(src:string){
 
 
 
-const colorPresetRows = ['rgb(255, 127, 127)','rgb(255, 191, 127)','rgb(255, 223, 127)','rgb(255, 255, 127)','rgb(191, 255, 127)','rgb(127, 255, 127)','rgb(127, 255, 249)'] as const
-const colorPresetColumns = ['rgb(255, 127, 251)','rgb(225, 127, 255)','rgb(180, 127, 255)','rgb(133, 127, 255)','rgb(127, 159, 255)','rgb(127, 204, 255)','rgb(127, 255, 249)'] as const
+function createGridSlot(row:number, column:number) {
+	const endRow =    row + 1
+	const endColumn = column + 1
 
-const namePresetRows = ['S','A','B','C','D','E','F'] as const
-const namePresetColumns = ['\u03C9','\u03B1','&beta;','&gamma;','&delta;','&epsilon;','&zeta;','&eta;'] as const
+	const root = create('div')
+	root.className = 'grid-cell drag-destination grid-slot'
+	root.style.gridRow = `${row}/${endRow}`
+	root.style.gridColumn = `${column}/${endColumn}`
+
+	root.addEventListener("mouseenter", () => {
+		console.log("Mouse entered", row, column);
+		dragDestination = root
+	})
+
+	return root
+}
 
 
 
@@ -132,9 +138,10 @@ const addRowButton = get('add-row-button')
 
 
 function addRow(startRow:number, columnsAmount:number, startColumn:number, color:string, textContent:string) {
+	const endRow = startRow + 1
 	const gridTier = create('div')
-	gridTier.className = 'grid-cell grid-tier'
-	gridTier.style.gridRow = `${startRow}/${startRow+1}`
+	gridTier.className = 'grid-cell grid-tier grid-tier-row'
+	gridTier.style.gridRow = `${startRow}/${endRow}`
 	gridTier.style.gridColumn = `${startColumn}/${startColumn+1}`
 	gridTier.style.backgroundColor = color
 
@@ -146,22 +153,18 @@ function addRow(startRow:number, columnsAmount:number, startColumn:number, color
 	mainGrid.append(gridTier)
 
 	for (let i = 0; i < columnsAmount; i++) {
-		const gridSlot = create('div')
-		gridSlot.className = 'grid-cell drag-destination grid-slot'
-		gridSlot.style.gridRow = `${startRow}/${startRow+1}`
-		gridSlot.style.gridColumn = `${i+startColumn+1}/${i+startColumn+2}`
-		mainGrid.append(gridSlot)
+		mainGrid.append(createGridSlot(startRow, startColumn+i+1))
 	}
 
 	const laneOptions = createRowOptions()
-	laneOptions.style.gridRow = `${startRow}/${startRow+1}`
+	laneOptions.style.gridRow = `${startRow}/${endRow}`
 	laneOptions.style.gridColumn = `${columnsAmount+startColumn+1}/${columnsAmount+startColumn+2}`
 	mainGrid.append(laneOptions)
 
 
 	const columnOptionsElements = getAll('column-options')
 	for (const element of columnOptionsElements) {
-		element.style.gridRow = `${startRow+1}/${startRow+2}`
+		element.style.gridRow = `${endRow}/${startRow+2}`
 	}	
 }
 
@@ -170,7 +173,7 @@ function addRow(startRow:number, columnsAmount:number, startColumn:number, color
 
 function addColumn(startColumn:number, rowsAmount:number, startRow:number, color:string, textContent:string) {
 	const gridTier = create('div')
-	gridTier.className = 'grid-cell grid-tier'
+	gridTier.className = 'grid-cell grid-tier grid-tier-column'
 	gridTier.style.gridColumn = `${startColumn}/${startColumn+1}`
 	gridTier.style.gridRow = `${startRow}/${startRow+1}`
 	gridTier.style.backgroundColor = color
@@ -183,11 +186,7 @@ function addColumn(startColumn:number, rowsAmount:number, startRow:number, color
 	mainGrid.append(gridTier)
 
 	for (let i = 0; i < rowsAmount; i++) {
-		const gridSlot = create('div')
-		gridSlot.className = 'grid-cell drag-destination grid-slot'
-		gridSlot.style.gridColumn = `${startColumn}/${startColumn+1}`
-		gridSlot.style.gridRow = `${i+startRow+1}/${i+startRow+2}`
-		mainGrid.append(gridSlot)
+		mainGrid.append(createGridSlot(startRow+i+1, startColumn))
 	}
 
 	const laneOptions = create("div")
@@ -227,7 +226,6 @@ function removeRow(startRow:number, startColumn:number) {
 		element.remove()
 	}
 	shiftGridElements(getGridArea(startRow+1,1,Infinity,Infinity,getAll("grid-cell")),0,-1)
-	rows--
 }
 
 
@@ -240,7 +238,6 @@ function removeColumn(startColumn:number, startRow:number) {
 		element.remove()
 	}
 	shiftGridElements(getGridArea(1,startColumn+1,Infinity,Infinity,getAll("grid-cell")),-1,0)
-	columns--
 }
 
 
@@ -313,6 +310,15 @@ function createRowOptions() {
 
 
 
+const colorPresetRows = ['rgb(255, 127, 127)','rgb(255, 191, 127)','rgb(255, 223, 127)','rgb(255, 255, 127)','rgb(191, 255, 127)','rgb(127, 255, 127)','rgb(127, 255, 249)'] as const
+const colorPresetColumns = ['rgb(255, 127, 251)','rgb(225, 127, 255)','rgb(180, 127, 255)','rgb(133, 127, 255)','rgb(127, 159, 255)','rgb(127, 204, 255)','rgb(127, 255, 249)'] as const
+
+const namePresetRows = ['S','A','B','C','D','E','F'] as const
+const namePresetColumns = ['\u03C9','\u03B1','\u03B2','\u03B3','\u03B4','\u03B5','\u03B6','\u03B7'] as const
+
+
+
+
 addRow(gridCeiling+1,0,gridWall, colorPresetRows[0], 'S')
 addRow(gridCeiling+2,0,gridWall, colorPresetRows[1], 'A')
 addRow(gridCeiling+3,0,gridWall, colorPresetRows[2], 'B')
@@ -320,33 +326,31 @@ addRow(gridCeiling+4,0,gridWall, colorPresetRows[3], 'C')
 addRow(gridCeiling+5,0,gridWall, colorPresetRows[4], 'D')
 addColumn(gridWall+1,5,gridCeiling, colorPresetColumns[0], namePresetColumns[0])
 addColumn(gridWall+2,5,gridCeiling, colorPresetColumns[1], namePresetColumns[1])
-addColumn(gridWall+3,5,gridCeiling, colorPresetColumns[2], '&beta;')
-addColumn(gridWall+4,5,gridCeiling, colorPresetColumns[3], '&gamma;')
-addColumn(gridWall+5,5,gridCeiling, colorPresetColumns[4], '&delta;')
+addColumn(gridWall+3,5,gridCeiling, colorPresetColumns[2], namePresetColumns[2])
+addColumn(gridWall+4,5,gridCeiling, colorPresetColumns[3], namePresetColumns[3])
+addColumn(gridWall+5,5,gridCeiling, colorPresetColumns[4], namePresetColumns[4])
 
 
 
 
 
-let rows = 5
-let columns = 5
+const rows    = () => getAll("grid-tier-row")   .length
+const columns = () => getAll("grid-tier-column").length
 
 
 
 addRowButton.addEventListener('click',()=>{
-	const color = colorPresetRows[rows]??""
-	const name = namePresetRows[rows]??"none"
-	addRow(rows+gridCeiling+1,columns,gridWall,color,name)
-	rows++
+	const color = colorPresetRows[rows()]??""
+	const name = namePresetRows[rows()]??"none"
+	addRow(rows() + gridCeiling+1,columns(),gridWall,color,name)
 })
 
 
 
 addColumnButton.addEventListener('click',()=>{
-	const color = colorPresetColumns[columns]??""
-	const name = namePresetColumns[columns]??"none"
-	addColumn(columns+gridCeiling+1,rows,gridWall,color,name)
-	columns++
+	const color = colorPresetColumns[columns()]??""
+	const name = namePresetColumns[columns()]??"none"
+	addColumn(columns() + gridCeiling+1,rows(),gridWall,color,name)
 })
 
 
