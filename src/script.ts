@@ -42,7 +42,7 @@ formSubmitButton.addEventListener('click', ()=>{
 	for (const file of files) {			
 		if (file) {
 			const reader = new FileReader()
-			reader.onload = function (e) {
+			reader.onload = (e) => {
 				const result = e.target?.result
 				if (typeof result !== "string") return
 				imageContainer.append(createDraggableImage(result))
@@ -56,14 +56,26 @@ formSubmitButton.addEventListener('click', ()=>{
 
 
 imageContainer.addEventListener("mouseenter", () => {
-	dragDestination = imageContainer
+	dragDestination.set(imageContainer)
 })
 
 
 
 
 let dragging = false
-let dragDestination:null|HTMLElement = null
+const dragDestination = (()=>{
+	let el:null|HTMLElement = null
+
+	function set(element?:HTMLElement) {
+		el = element ?? null
+	}
+
+	return {
+		set,
+		get: ()=>el,
+	} as const
+})()
+
 function createDraggableImage(src:string){
 	const root = create('img')
 	root.className = 'image'
@@ -81,9 +93,10 @@ function createDraggableImage(src:string){
 			window.removeEventListener('mousemove',mouseMove)
 			root.style.position = 'unset'
 			root.style.pointerEvents = 'auto'
-			if (dragDestination) {
-				dragDestination.append(root)
-				dragDestination = null
+			const element = dragDestination.get()
+			if (element) {
+				element.append(root)
+				dragDestination.set()
 			}
 			dragging = false
 		}
@@ -117,7 +130,7 @@ function createGridSlot(row:number, column:number) {
 
 	root.addEventListener("mouseenter", () => {
 		console.log("Mouse entered", row, column);
-		dragDestination = root
+		dragDestination.set(root)
 	})
 
 	return root
@@ -189,9 +202,7 @@ function addColumn(startColumn:number, rowsAmount:number, startRow:number, color
 		mainGrid.append(createGridSlot(startRow+i+1, startColumn))
 	}
 
-	const laneOptions = create("div")
-	laneOptions.textContent = "WIP"
-	laneOptions.style.color = "white"
+	const laneOptions = createColumnOptions()
 	laneOptions.style.gridColumn = `${startColumn}/${startColumn+1}`
 	laneOptions.style.gridRow = `${rowsAmount+startRow+1}/${rowsAmount+startRow+2}`
 	mainGrid.append(laneOptions)
@@ -256,7 +267,6 @@ function shiftGridElements(elementsToMove:readonly HTMLElement[], x:number, y:nu
 
 
 function createRowOptions() {
-	//If row is false, assume column
 	const root = create('div')
 	root.className = 'grid-cell lane-options row-options'
 
@@ -276,9 +286,6 @@ function createRowOptions() {
 		const rowBelow = Number(root.style.gridRowStart)+1
 		const elementsOnThisRow =  getGridArea(thisRow,  gridCeiling, thisRow+1,  Infinity, getAll("grid-cell"))
 		const elementsOnRowBelow = getGridArea(rowBelow, gridCeiling, rowBelow+1, Infinity, getAll("grid-cell"))
-		if (elementsOnRowBelow.filter(e=>e.classList.contains('grid-slot')).length === 0) {
-			return
-		}
 		shiftGridElements(elementsOnThisRow,0,1)
 		shiftGridElements(elementsOnRowBelow,0,-1)
 	})
@@ -294,15 +301,60 @@ function createRowOptions() {
 		const rowAbove = Number(root.style.gridRowStart)-1
 		const elementsOnThisRow =  getGridArea(thisRow,  gridWall, thisRow+1,  Infinity, getAll("grid-cell"))
 		const elementsOnRowAbove = getGridArea(rowAbove, gridWall, rowAbove+1, Infinity, getAll("grid-cell"))
-		if (elementsOnRowAbove.filter(e=>e.classList.contains('grid-slot')).length === 0) {
-			return
-		}
 		shiftGridElements(elementsOnThisRow,0,-1)
 		shiftGridElements(elementsOnRowAbove,0,1)
 	})
 
 	shiftRowUpButton.innerHTML += `<img src="img/arrow-icon.png" alt="arrow-icon" class="${'shift-row-up-arrow'} shift-arrow">`
 	root.append(shiftRowUpButton)
+	
+	return root
+}
+
+
+
+
+function createColumnOptions() {
+	const root = create('div')
+	root.className = 'grid-cell lane-options column-options'
+
+	const removeLaneButton = create('button')
+	removeLaneButton.className = 'remove-lane-button remove-column-button'
+	root.append(removeLaneButton)
+
+	removeLaneButton.addEventListener('click',()=>{
+		removeColumn(Number(root.style.gridColumnStart),gridCeiling)
+	})
+
+	const shiftColumnDownButton = create('button')
+	shiftColumnDownButton.className = 'shift-column-right-button'
+
+	shiftColumnDownButton.addEventListener('click',()=>{
+		const thisColumn = Number(root.style.gridColumnStart)
+		const columnBelow = Number(root.style.gridColumnStart)+1
+		const elementsOnThisColumn =  getGridArea(gridWall, thisColumn,  Infinity, thisColumn+1,  getAll("grid-cell"))
+		const elementsOnColumnBelow = getGridArea(gridWall, columnBelow, Infinity, columnBelow+1, getAll("grid-cell"))
+		shiftGridElements(elementsOnThisColumn,1,0)
+		shiftGridElements(elementsOnColumnBelow,-1,0)
+	})
+
+	shiftColumnDownButton.innerHTML += `<img src="img/arrow-icon.png" alt="arrow-icon" class="${'shift-column-right-arrow'} shift-arrow">`
+	root.append(shiftColumnDownButton)
+
+	const shiftColumnUpButton = create('button')
+	shiftColumnUpButton.className = 'shift-column-left-button'
+
+	shiftColumnUpButton.addEventListener('click',()=>{
+		const thisColumn = Number(root.style.gridColumnStart)
+		const columnAbove = Number(root.style.gridColumnStart)-1
+		const elementsOnThisColumn =  getGridArea(gridWall, thisColumn,  Infinity, thisColumn+1,  getAll("grid-cell"))
+		const elementsOnColumnAbove = getGridArea(gridWall, columnAbove, Infinity, columnAbove+1, getAll("grid-cell"))
+		shiftGridElements(elementsOnThisColumn,-1,0)
+		shiftGridElements(elementsOnColumnAbove,1,0)
+	})
+
+	shiftColumnUpButton.innerHTML += `<img src="img/arrow-icon.png" alt="arrow-icon" class="${'shift-column-left-arrow'} shift-arrow">`
+	root.append(shiftColumnUpButton)
 	
 	return root
 }
